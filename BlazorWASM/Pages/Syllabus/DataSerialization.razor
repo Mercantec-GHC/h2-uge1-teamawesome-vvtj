@@ -1,0 +1,326 @@
+@page "/data-serialization"
+
+<PageTitle>Data Serialisering - H2 Studieplan</PageTitle>
+
+<div class="serialization-container">
+    <div class="serialization-header">
+        <h1 class="serialization-title">
+            <i class="fas fa-exchange-alt"></i>
+            Data Serialisering
+        </h1>
+        <p class="serialization-subtitle">JSON håndtering og data mapping i C#</p>
+    </div>
+
+    <!-- Grundlæggende Serialisering -->
+    <div class="content-section">
+        <h2><i class="fas fa-code"></i> Grundlæggende Serialisering</h2>
+        <div class="explanation-card">
+            <p>
+                Serialisering er processen med at konvertere objekter til et format der kan gemmes eller sendes over netværket.
+                I moderne web-applikationer bruger vi primært JSON (JavaScript Object Notation).
+            </p>
+            
+            <div class="methods-grid">
+                <div class="method-card get">
+                    <h4>Objekt til JSON</h4>
+                    <div class="code-block">
+                        <pre><code class="language-csharp">
+public class Person
+{
+    public string Navn { get; set; }
+    public int Alder { get; set; }
+    public string[] Hobbyer { get; set; }
+}
+
+// Serialisering
+var person = new Person 
+{ 
+    Navn = "Peter", 
+    Alder = 25,
+    Hobbyer = new[] { "Programmering", "Gaming" }
+};
+
+// Konverter til JSON
+string json = JsonSerializer.Serialize(person);
+
+// Resultat: {
+//     "Navn":"Peter",
+//     "Alder":25,
+//     "Hobbyer":["Programmering","Gaming"]
+// }
+                        </code></pre>
+                    </div>
+                    <div class="explanation-text">
+                        <p>System.Text.Json er den anbefalede måde at serialisere i moderne C#:</p>
+                        <ul>
+                            <li>Hurtigere end Newtonsoft.Json</li>
+                            <li>Indbygget i .NET</li>
+                            <li>Understøtter alle grundlæggende datatyper</li>
+                            <li>Kan håndtere komplekse objekter og arrays</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="method-card post">
+                    <h4>JSON til Objekt</h4>
+                    <div class="code-block">
+                        <pre><code class="language-csharp">// JSON string
+string json = "&#123;
+    Navn: Peter,
+    Alder: 25,
+    Hobbyer: [Programmering, Gaming]
+&#125;";
+
+// Deserialisering
+var person = JsonSerializer.Deserialize&lt;Person&gt;(json);
+
+// Brug objektet
+Console.WriteLine(person.Navn); // Output: Peter
+                        </code></pre>
+                    </div>
+                    <div class="explanation-text">
+                        <p>Deserialisering konverterer JSON tilbage til et C# objekt:</p>
+                        <ul>
+                            <li>Automatisk type-konvertering</li>
+                            <li>Fejlhåndtering hvis JSON er ugyldig</li>
+                            <li>Understøtter nestede objekter</li>
+                            <li>Kan håndtere null-værdier</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Avanceret: Data Mapping -->
+    <div class="content-section">
+        <h2><i class="fas fa-random"></i> Data Mapping & Attributter</h2>
+        <div class="explanation-card">
+            <p>
+                Nogle gange matcher JSON-felter ikke dine C#-property navne. Her kan du bruge attributter til at mappe felter korrekt.
+            </p>
+            <div class="code-block">
+                <h4>Eksempel med [JsonPropertyName]</h4>
+                <pre><code class="language-csharp">public class Bruger
+{
+    [JsonPropertyName("user_name")]
+    public string Brugernavn { get; set; }
+
+    [JsonPropertyName("age")]
+    public int Alder { get; set; }
+}
+
+// JSON: { "user_name": "maria", "age": 30 }
+</code></pre>
+            </div>
+            <div class="explanation-text">
+                <p>
+                    <code>[JsonPropertyName]</code> gør det muligt at matche JSON-felter med dine egne property-navne i C#.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Håndtering af Lister og Arrays -->
+    <div class="content-section">
+        <h2><i class="fas fa-list"></i> Lister og Arrays</h2>
+        <div class="explanation-card">
+            <p>
+                Du kan nemt serialisere og deserialisere lister og arrays:
+            </p>
+            <div class="code-block">
+                <h4>Eksempel</h4>
+                <pre><code class="language-csharp">// Liste af personer
+var personer = new List&lt;Person&gt; {
+    new Person { Navn = "Peter", Alder = 25, Hobbyer = new[] { "Gaming" } },
+    new Person { Navn = "Maria", Alder = 30, Hobbyer = new[] { "Løb" } }
+};
+
+string json = JsonSerializer.Serialize(personer);
+
+var personer2 = JsonSerializer.Deserialize&lt;List&lt;Person&gt;&gt;(json);
+</code></pre>
+            </div>
+        </div>
+    </div>
+
+    <!-- Fejlhåndtering ved Serialisering -->
+    <div class="content-section">
+        <h2><i class="fas fa-exclamation-triangle"></i> Fejlhåndtering</h2>
+        <div class="explanation-card">
+            <p>
+                Det er vigtigt at håndtere fejl, hvis JSON ikke matcher dine klasser eller er ugyldig.
+            </p>
+            <div class="code-block">
+                <h4>Try-Catch ved Deserialisering</h4>
+                <pre><code class="language-csharp">try
+{
+    var person = JsonSerializer.Deserialize&lt;Person&gt;(ugyldigJson);
+}
+catch (JsonException ex)
+{
+    Console.WriteLine("Fejl i JSON: " + ex.Message);
+}
+</code></pre>
+            </div>
+        </div>
+    </div>
+
+    <!-- Best Practices -->
+    <div class="content-section">
+        <h2><i class="fas fa-check-circle"></i> Best Practices</h2>
+        <div class="explanation-card">
+            <ul>
+                <li>Brug <code>System.Text.Json</code> til nye projekter</li>
+                <li>Brug attributter til at matche JSON og C# properties</li>
+                <li>Håndter fejl med try/catch</li>
+                <li>Valider data efter deserialisering</li>
+                <li>Undgå at stole blindt på eksternt data</li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<style>
+    .serialization-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 2rem;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    .serialization-header {
+        text-align: center;
+        margin-bottom: 3rem;
+        background: linear-gradient(135deg, #667eea 0%, #23b6e6 100%);
+        color: white;
+        padding: 3rem 2rem;
+        border-radius: 20px;
+        box-shadow: 0 20px 40px rgba(102, 126, 234, 0.1);
+    }
+    .serialization-title {
+        font-size: 3rem;
+        font-weight: 700;
+        margin-bottom: 1rem;
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+    .serialization-title i {
+        margin-right: 1rem;
+        color: #ffd700;
+    }
+    .serialization-subtitle {
+        font-size: 1.3rem;
+        opacity: 0.9;
+        font-weight: 300;
+        margin: 0;
+    }
+    .content-section {
+        background: white;
+        border-radius: 15px;
+        padding: 2rem;
+        margin-bottom: 2rem;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        border-left: 5px solid #23b6e6;
+    }
+    .content-section h2 {
+        color: #333;
+        margin-bottom: 1.5rem;
+        font-size: 1.8rem;
+    }
+    .content-section h2 i {
+        color: #23b6e6;
+        margin-right: 0.5rem;
+    }
+    .explanation-card {
+        background: #f8f9fa;
+        padding: 2rem;
+        border-radius: 12px;
+        margin-bottom: 1rem;
+    }
+    .methods-grid {
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+        margin-top: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+    .method-card {
+        border-radius: 12px;
+        padding: 1.5rem;
+        border-left: 4px solid;
+        transition: transform 0.3s ease;
+        background: #f8f9fa;
+        width: 100%;
+    }
+    .method-card.get { border-left-color: #28a745; }
+    .method-card.post { border-left-color: #007bff; }
+    .method-card h4 {
+        color: #23b6e6;
+        margin-top: 0;
+        margin-bottom: 1rem;
+    }
+    .code-block {
+        background: #2d3748;
+        color: #e2e8f0;
+        padding: 2rem;
+        border-radius: 12px;
+        overflow-x: auto;
+        margin-top: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+    .code-block h4 {
+        color: #ffd700;
+        margin-top: 0;
+        margin-bottom: 1rem;
+    }
+    .code-block code.language-csharp {
+        font-family: 'Fira Mono', 'Consolas', 'Courier New', monospace;
+        font-size: 1rem;
+        color: #e2e8f0;
+        background: none;
+        display: block;
+        white-space: pre;
+    }
+    .explanation-text {
+        margin-top: 1rem;
+        padding: 1rem;
+        background: #f0f4f8;
+        border-radius: 8px;
+        font-size: 0.95rem;
+    }
+    .explanation-text ul {
+        margin: 0.5rem 0;
+        padding-left: 1.5rem;
+    }
+    .explanation-text li {
+        margin-bottom: 0.5rem;
+    }
+    .explanation-text code {
+        background: #e2e8f0;
+        padding: 0.2rem 0.4rem;
+        border-radius: 4px;
+        font-family: 'Fira Mono', 'Consolas', 'Courier New', monospace;
+    }
+    @@media (max-width: 768px) {
+        .serialization-container {
+            padding: 1rem;
+        }
+        .serialization-title {
+            font-size: 2rem;
+        }
+        .methods-grid {
+            flex-direction: column;
+        }
+    }
+</style>
+
+@code {
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await JS.InvokeVoidAsync("PrismHighlight");
+        }
+    }
+
+    [Inject] IJSRuntime JS { get; set; }
+}

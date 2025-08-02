@@ -1,0 +1,933 @@
+@page "/api-calls"
+
+<PageTitle>API-kald fra Frontend - H2 Studieplan</PageTitle>
+
+<div class="api-calls-container">
+    <div class="api-header">
+        <h1 class="api-title">
+            <i class="fas fa-exchange-alt"></i>
+            API-kald fra Frontend
+        </h1>
+        <p class="api-subtitle">Forstå kommunikation mellem klient og server</p>
+    </div>
+
+    <!-- Hvad er API-kald? -->
+    <div class="content-section">
+        <h2><i class="fas fa-question-circle"></i> Hvad er API-kald?</h2>
+        <div class="explanation-card">
+            <p>
+                <strong>API (Application Programming Interface)</strong> er en måde for forskellige programmer at kommunikere med hinanden. 
+                Fra et frontend perspektiv er API-kald som at sende beskeder til en server og få svar tilbage.
+            </p>
+            
+            <div class="api-flow">
+                <div class="flow-step">
+                    <div class="step-icon client">
+                        <i class="fas fa-laptop"></i>
+                    </div>
+                    <h4>1. Frontend (Klient)</h4>
+                    <p>Din Blazor app sender en forespørgsel</p>
+                </div>
+                
+                <div class="flow-arrow">
+                    <i class="fas fa-arrow-right"></i>
+                </div>
+                
+                <div class="flow-step">
+                    <div class="step-icon server">
+                        <i class="fas fa-server"></i>
+                    </div>
+                    <h4>2. Backend (Server)</h4>
+                    <p>Opgaver API'en behandler forespørgslen</p>
+                </div>
+                
+                <div class="flow-arrow">
+                    <i class="fas fa-arrow-left"></i>
+                </div>
+                
+                <div class="flow-step">
+                    <div class="step-icon response">
+                        <i class="fas fa-reply"></i>
+                    </div>
+                    <h4>3. Svar</h4>
+                    <p>Data sendes tilbage til din app</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- HTTP Metoder -->
+    <div class="content-section">
+        <h2><i class="fas fa-tools"></i> HTTP Metoder</h2>
+        <p>
+            De fire vigtigste HTTP-metoder svarer til CRUD-principperne:
+            <strong>Create (POST)</strong>, <strong>Read (GET)</strong>, <strong>Update (PUT)</strong> og <strong>Delete (DELETE)</strong>.<br />
+            CRUD beskriver de grundlæggende operationer, man kan udføre på data i et system.
+        </p>
+       
+        <div class="methods-main-grid">
+            <div class="method-card get">
+                <div class="method-header">
+                    <span class="method-badge">GET</span>
+                    <h4>Read (Hent Data)</h4>
+                </div>
+                <p>CRUD: <strong>Read</strong></p>
+                <p>Bruges til at hente information fra serveren. Ændrer ikke data.</p>
+                <div class="code-example">
+                    <code>GET /api/opgaver</code>
+                </div>
+            </div>
+            <div class="method-card post">
+                <div class="method-header">
+                    <span class="method-badge">POST</span>
+                    <h4>Create (Opret Data)</h4>
+                </div>
+                <p>CRUD: <strong>Create</strong></p>
+                <p>Bruges til at oprette nye ressourcer på serveren.</p>
+                <div class="code-example">
+                    <code>POST /api/opgaver</code>
+                </div>
+            </div>
+            <div class="method-card put">
+                <div class="method-header">
+                    <span class="method-badge">PUT</span>
+                    <h4>Update (Opdater Data)</h4>
+                </div>
+                <p>CRUD: <strong>Update</strong></p>
+                <p>Bruges til at opdatere eksisterende ressourcer.</p>
+                <div class="code-example">
+                    <code>PUT /api/opgaver/{id}</code>
+                </div>
+            </div>
+            <div class="method-card delete">
+                <div class="method-header">
+                    <span class="method-badge">DELETE</span>
+                    <h4>Delete (Slet Data)</h4>
+                </div>
+                <p>CRUD: <strong>Delete</strong></p>
+                <p>Bruges til at slette ressourcer fra serveren.</p>
+                <div class="code-example">
+                    <code>DELETE /api/opgaver/{id}</code>
+                </div>
+            </div>
+        </div>
+        <div class="methods-other-grid">
+            <div class="method-card other patch">
+                <span class="method-badge">PATCH</span>
+                <h4>Opdater delvist</h4>
+                <p>Opdaterer dele af en ressource</p>
+            </div>
+            <div class="method-card other head">
+                <span class="method-badge">HEAD</span>
+                <h4>Header forespørgsel</h4>
+                <p>Henter kun headers, ikke selve dataen</p>
+            </div>
+            <div class="method-card other options">
+                <span class="method-badge">OPTIONS</span>
+                <h4>Metode muligheder</h4>
+                <p>Spørger serveren hvilke metoder der er tilladt</p>
+            </div>
+            <div class="method-card other trace">
+                <span class="method-badge">TRACE</span>
+                <h4>Fejlfinding</h4>
+                <p>Bruges til fejlfinding</p>
+            </div>
+            <!-- Tilføj flere hvis ønsket -->
+        </div>
+    </div>
+
+    <!-- HTTP Status Koder -->
+    <div class="content-section">
+        <h2><i class="fas fa-traffic-light"></i> HTTP Status Koder</h2>
+        <p class="section-intro">Status koder fortæller dig hvordan din forespørgsel gik. Her er de vigtigste:</p>
+        
+        <div class="status-categories">
+            <!-- 2xx Success -->
+            <div class="status-category success">
+                <h3><i class="fas fa-check-circle"></i> 2xx - Success (Alt gik godt!)</h3>
+                <div class="status-codes">
+                    <div class="status-code">
+                        <span class="code">200</span>
+                        <div class="code-info">
+                            <h4>OK</h4>
+                            <p>Forespørgslen lykkedes perfekt</p>
+                        </div>
+                    </div>
+                    <div class="status-code">
+                        <span class="code">201</span>
+                        <div class="code-info">
+                            <h4>Created</h4>
+                            <p>Ny ressource blev oprettet</p>
+                        </div>
+                    </div>
+                    <div class="status-code">
+                        <span class="code">204</span>
+                        <div class="code-info">
+                            <h4>No Content</h4>
+                            <p>Succesfuld, men intet indhold at returnere</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 4xx Client Error -->
+            <div class="status-category client-error">
+                <h3><i class="fas fa-exclamation-triangle"></i> 4xx - Client Error (Du lavede en fejl)</h3>
+                <div class="status-codes">
+                    <div class="status-code">
+                        <span class="code">400</span>
+                        <div class="code-info">
+                            <h4>Bad Request</h4>
+                            <p>Din forespørgsel var forkert formateret</p>
+                        </div>
+                    </div>
+                    <div class="status-code">
+                        <span class="code">401</span>
+                        <div class="code-info">
+                            <h4>Unauthorized</h4>
+                            <p>Du skal logge ind først</p>
+                        </div>
+                    </div>
+                    <div class="status-code">
+                        <span class="code">403</span>
+                        <div class="code-info">
+                            <h4>Forbidden</h4>
+                            <p>Du har ikke tilladelse til dette</p>
+                        </div>
+                    </div>
+                    <div class="status-code">
+                        <span class="code">404</span>
+                        <div class="code-info">
+                            <h4>Not Found</h4>
+                            <p>Ressourcen findes ikke</p>
+                        </div>
+                    </div>
+                    <div class="status-code special">
+                        <span class="code">418</span>
+                        <div class="code-info">
+                            <h4>I'm a teapot </h4>
+                            <p>Serveren nægter at brygge kaffe, fordi den er en tekande! <i class="fas fa-coffee"></i></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 5xx Server Error -->
+            <div class="status-category server-error">
+                <h3><i class="fas fa-server"></i> 5xx - Server Error (Serveren lavede en fejl)</h3>
+                <div class="status-codes">
+                    <div class="status-code">
+                        <span class="code">500</span>
+                        <div class="code-info">
+                            <h4>Internal Server Error</h4>
+                            <p>Noget gik galt på serveren</p>
+                        </div>
+                    </div>
+                    <div class="status-code">
+                        <span class="code">502</span>
+                        <div class="code-info">
+                            <h4>Bad Gateway</h4>
+                            <p>Serveren fik et dårligt svar fra en anden server</p>
+                        </div>
+                    </div>
+                    <div class="status-code">
+                        <span class="code">503</span>
+                        <div class="code-info">
+                            <h4>Service Unavailable</h4>
+                            <p>Serveren er midlertidigt utilgængelig</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- HTTPS Sikkerhed -->
+    <div class="content-section">
+        <h2><i class="fas fa-shield-alt"></i> HTTPS - Sikker Kommunikation</h2>
+        <div class="https-explanation">
+            <div class="https-comparison">
+                <div class="protocol-card insecure">
+                    <div class="protocol-header">
+                        <i class="fas fa-unlock"></i>
+                        <h3>HTTP</h3>
+                        <span class="security-badge danger">Usikker</span>
+                    </div>
+                    <ul>
+                        <li><i class="fas fa-times"></i> Data sendes i klartekst</li>
+                        <li><i class="fas fa-times"></i> Kan aflæses af andre</li>
+                        <li><i class="fas fa-times"></i> Ingen verifikation af server</li>
+                        <li><i class="fas fa-times"></i> Sårbar over for angreb</li>
+                    </ul>
+                </div>
+
+                <div class="vs-divider">
+                    <span>VS</span>
+                </div>
+
+                <div class="protocol-card secure">
+                    <div class="protocol-header">
+                        <i class="fas fa-lock"></i>
+                        <h3>HTTPS</h3>
+                        <span class="security-badge safe">Sikker</span>
+                    </div>
+                    <ul>
+                        <li><i class="fas fa-check"></i> Data krypteres</li>
+                        <li><i class="fas fa-check"></i> Kan ikke aflæses af andre</li>
+                        <li><i class="fas fa-check"></i> Server verificeres med certifikat</li>
+                        <li><i class="fas fa-check"></i> Beskyttet mod angreb</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="https-details">
+                <h3><i class="fas fa-key"></i> Hvordan virker HTTPS?</h3>
+                <div class="encryption-flow">
+                    <div class="encryption-step">
+                        <div class="step-number">1</div>
+                        <h4>Handshake</h4>
+                        <p>Klient og server aftaler krypteringsmetode</p>
+                    </div>
+                    <div class="encryption-step">
+                        <div class="step-number">2</div>
+                        <h4>Certifikat</h4>
+                        <p>Server beviser sin identitet med SSL-certifikat</p>
+                    </div>
+                    <div class="encryption-step">
+                        <div class="step-number">3</div>
+                        <h4>Kryptering</h4>
+                        <p>Al data krypteres før afsendelse</p>
+                    </div>
+                    <div class="encryption-step">
+                        <div class="step-number">4</div>
+                        <h4>Sikker kommunikation</h4>
+                        <p>Data kan kun læses af afsender og modtager</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="https-importance">
+                <h3><i class="fas fa-exclamation-circle"></i> Hvorfor er HTTPS vigtigt?</h3>
+                <div class="importance-grid">
+                    <div class="importance-item">
+                        <i class="fas fa-user-shield"></i>
+                        <h4>Beskytter brugerdata</h4>
+                        <p>Passwords, personlige oplysninger og følsomme data holdes private</p>
+                    </div>
+                    <div class="importance-item">
+                        <i class="fas fa-search"></i>
+                        <h4>SEO fordele</h4>
+                        <p>Google favoriserer HTTPS-sider i søgeresultater</p>
+                    </div>
+                    <div class="importance-item">
+                        <i class="fas fa-heart"></i>
+                        <h4>Brugertillid</h4>
+                        <p>Brugere stoler mere på sider med grøn lås-ikon</p>
+                    </div>
+                    <div class="importance-item">
+                        <i class="fas fa-gavel"></i>
+                        <h4>Lovkrav</h4>
+                        <p>GDPR og andre love kræver sikker databehandling</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Praktisk eksempel -->
+    <div class="content-section">
+        <h2><i class="fas fa-code"></i> Praktiske Eksempler i Blazor</h2>
+        <div class="code-example-section">
+            <h3>Sådan laver du API-kald i Blazor:</h3>
+
+            <div class="code-block">
+                <h4>GET - Hent data</h4>
+                <pre><code class="language-csharp">// Hent alle opgaver
+public async Task&lt;List&lt;Opgave&gt;&gt; GetOpgaverAsync()
+{
+    try
+    {
+        var response = await _httpClient.GetAsync("https://opgaver.mercantec.tech/api/opgaver");
+        if (response.IsSuccessStatusCode)
+        {
+            var json = await response.Content.ReadAsStringAsync();
+            return JsonSerializer.Deserialize&lt;List&lt;Opgave&gt;&gt;(json);
+        }
+        else
+        {
+            Console.WriteLine($"Fejl: {response.StatusCode}");
+            return new List&lt;Opgave&gt;();
+        }
+    }
+    catch (HttpRequestException ex)
+    {
+        Console.WriteLine($"Netværksfejl: {ex.Message}");
+        return new List&lt;Opgave&gt;();
+    }
+}
+</code></pre>
+            </div>
+
+            <div class="code-block">
+                <h4>POST - Opret data</h4>
+                <pre><code class="language-csharp">// Opret en ny opgave
+public async Task&lt;bool&gt; OpretOpgaveAsync(Opgave nyOpgave)
+{
+    try
+    {
+        var response = await _httpClient.PostAsJsonAsync("https://opgaver.mercantec.tech/api/opgaver",
+         nyOpgave);
+        return response.IsSuccessStatusCode;
+    }
+    catch (HttpRequestException ex)
+    {
+        Console.WriteLine($"Netværksfejl: {ex.Message}");
+        return false;
+    }
+}
+</code></pre>
+            </div>
+
+            <div class="code-block">
+                <h4>PUT - Opdater data</h4>
+                <pre><code class="language-csharp">// Opdater en eksisterende opgave
+public async Task&lt;bool&gt; OpdaterOpgaveAsync(int id, Opgave opdateretOpgave)
+{
+    try
+    {
+        var response = await _httpClient.PutAsJsonAsync($"https://opgaver.mercantec.tech/api/opgaver/{id}",
+         opdateretOpgave);
+        return response.IsSuccessStatusCode;
+    }
+    catch (HttpRequestException ex)
+    {
+        Console.WriteLine($"Netværksfejl: {ex.Message}");
+        return false;
+    }
+}
+</code></pre>
+            </div>
+
+            <div class="code-block">
+                <h4>DELETE - Slet data</h4>
+                <pre><code class="language-csharp">// Slet en opgave
+public async Task&lt;bool&gt; SletOpgaveAsync(int id)
+{
+    try
+    {
+        var response = await _httpClient.DeleteAsync($"https://opgaver.mercantec.tech/api/opgaver/{id}");
+        return response.IsSuccessStatusCode;
+    }
+    catch (HttpRequestException ex)
+    {
+        Console.WriteLine($"Netværksfejl: {ex.Message}");
+        return false;
+    }
+}
+</code></pre>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .api-calls-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 2rem;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    .api-header {
+        text-align: center;
+        margin-bottom: 3rem;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 3rem 2rem;
+        border-radius: 20px;
+        box-shadow: 0 20px 40px rgba(102, 126, 234, 0.1);
+    }
+
+    .api-title {
+        font-size: 3rem;
+        font-weight: 700;
+        margin-bottom: 1rem;
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .api-title i {
+        margin-right: 1rem;
+        color: #ffd700;
+    }
+
+    .api-subtitle {
+        font-size: 1.3rem;
+        opacity: 0.9;
+        font-weight: 300;
+        margin: 0;
+    }
+
+    .content-section {
+        background: white;
+        border-radius: 15px;
+        padding: 2rem;
+        margin-bottom: 2rem;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        border-left: 5px solid #667eea;
+    }
+
+    .content-section h2 {
+        color: #333;
+        margin-bottom: 1.5rem;
+        font-size: 1.8rem;
+    }
+
+    .content-section h2 i {
+        color: #667eea;
+        margin-right: 0.5rem;
+    }
+
+    .explanation-card {
+        background: #f8f9fa;
+        padding: 2rem;
+        border-radius: 12px;
+        margin-bottom: 1rem;
+    }
+
+    .api-flow {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 2rem;
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+
+    .flow-step {
+        text-align: center;
+        flex: 1;
+        min-width: 150px;
+    }
+
+    .step-icon {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 1rem;
+        font-size: 2rem;
+        color: white;
+    }
+
+    .step-icon.client { background: linear-gradient(135deg, #667eea, #764ba2); }
+    .step-icon.server { background: linear-gradient(135deg, #f093fb, #f5576c); }
+    .step-icon.response { background: linear-gradient(135deg, #4facfe, #00f2fe); }
+
+    .flow-arrow {
+        font-size: 2rem;
+        color: #667eea;
+        margin: 0 1rem;
+    }
+
+    .methods-main-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1.5rem;
+        margin-top: 1.5rem;
+        margin-bottom: 2rem;
+    }
+
+    .method-card {
+        border-radius: 12px;
+        padding: 1.5rem;
+        border-left: 4px solid;
+        transition: transform 0.3s ease;
+    }
+
+    .method-card:hover {
+        transform: translateY(-5px);
+    }
+
+    .method-card.get { 
+        background: linear-gradient(135deg, #d4edda, #c3e6cb);
+        border-left-color: #28a745;
+    }
+    .method-card.post { 
+        background: linear-gradient(135deg, #cce5ff, #b3d9ff);
+        border-left-color: #007bff;
+    }
+    .method-card.put { 
+        background: linear-gradient(135deg, #fff3cd, #ffeaa7);
+        border-left-color: #ffc107;
+    }
+    .method-card.delete { 
+        background: linear-gradient(135deg, #f8d7da, #f5c6cb);
+        border-left-color: #dc3545;
+    }
+
+    .method-header {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        margin-bottom: 1rem;
+    }
+
+    .method-badge {
+        background: rgba(0, 0, 0, 0.1);
+        padding: 0.3rem 0.8rem;
+        border-radius: 20px;
+        font-weight: bold;
+        font-size: 0.9rem;
+    }
+
+    .code-example {
+        background: rgba(0, 0, 0, 0.1);
+        padding: 0.5rem 1rem;
+        border-radius: 6px;
+        font-family: 'Courier New', monospace;
+        margin-top: 1rem;
+    }
+
+    .status-categories {
+        display: flex;
+        flex-direction: column;
+        gap: 2rem;
+    }
+
+    .status-category {
+        border-radius: 12px;
+        padding: 2rem;
+        border-left: 5px solid;
+    }
+
+    .status-category.success {
+        background: linear-gradient(135deg, #d4edda, #c3e6cb);
+        border-left-color: #28a745;
+    }
+
+    .status-category.client-error {
+        background: linear-gradient(135deg, #fff3cd, #ffeaa7);
+        border-left-color: #ffc107;
+    }
+
+    .status-category.server-error {
+        background: linear-gradient(135deg, #f8d7da, #f5c6cb);
+        border-left-color: #dc3545;
+    }
+
+    .status-category h3 {
+        margin-bottom: 1.5rem;
+        color: #333;
+    }
+
+    .status-codes {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 1rem;
+    }
+
+    .status-code {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        background: rgba(255, 255, 255, 0.7);
+        padding: 1rem;
+        border-radius: 8px;
+    }
+
+    .status-code.special {
+        background: linear-gradient(135deg,rgb(243, 221, 221),rgb(250, 152, 103));
+    }
+
+    .status-code .code {
+        background: rgba(0, 0, 0, 0.1);
+        padding: 0.5rem 1rem;
+        border-radius: 6px;
+        font-weight: bold;
+        font-family: 'Courier New', monospace;
+        min-width: 60px;
+        text-align: center;
+    }
+
+    .code-info h4 {
+        margin: 0 0 0.5rem 0;
+        color: #333;
+    }
+
+    .code-info p {
+        margin: 0;
+        color: #666;
+        font-size: 0.9rem;
+    }
+
+    .https-explanation {
+        margin-top: 1.5rem;
+    }
+
+    .https-comparison {
+        display: flex;
+        gap: 2rem;
+        align-items: center;
+        margin-bottom: 3rem;
+    }
+
+    .protocol-card {
+        flex: 1;
+        padding: 2rem;
+        border-radius: 12px;
+        text-align: center;
+    }
+
+    .protocol-card.insecure {
+        background: linear-gradient(135deg, #f8d7da, #f5c6cb);
+        border: 2px solid #dc3545;
+    }
+
+    .protocol-card.secure {
+        background: linear-gradient(135deg, #d4edda, #c3e6cb);
+        border: 2px solid #28a745;
+    }
+
+    .protocol-header {
+        margin-bottom: 1.5rem;
+    }
+
+    .protocol-header i {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+    }
+
+    .protocol-card.insecure .protocol-header i {
+        color: #dc3545;
+    }
+
+    .protocol-card.secure .protocol-header i {
+        color: #28a745;
+    }
+
+    .security-badge {
+        display: inline-block;
+        padding: 0.3rem 1rem;
+        border-radius: 20px;
+        font-weight: bold;
+        font-size: 0.8rem;
+        margin-top: 0.5rem;
+    }
+
+    .security-badge.danger {
+        background: #dc3545;
+        color: white;
+    }
+
+    .security-badge.safe {
+        background: #28a745;
+        color: white;
+    }
+
+    .protocol-card ul {
+        list-style: none;
+        padding: 0;
+        text-align: left;
+    }
+
+    .protocol-card li {
+        margin-bottom: 0.8rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .vs-divider {
+        background: #667eea;
+        color: white;
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        font-size: 1.2rem;
+    }
+
+    .encryption-flow {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1.5rem;
+        margin: 2rem 0;
+    }
+
+    .encryption-step {
+        text-align: center;
+        padding: 1.5rem;
+        background: #f8f9fa;
+        border-radius: 12px;
+    }
+
+    .step-number {
+        width: 40px;
+        height: 40px;
+        background: #667eea;
+        color: white;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 1rem;
+        font-weight: bold;
+    }
+
+    .importance-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1.5rem;
+        margin-top: 1.5rem;
+    }
+
+    .importance-item {
+        text-align: center;
+        padding: 1.5rem;
+        background: #f8f9fa;
+        border-radius: 12px;
+        border-top: 4px solid #667eea;
+    }
+
+    .importance-item i {
+        font-size: 2.5rem;
+        color: #667eea;
+        margin-bottom: 1rem;
+    }
+
+    .code-block {
+        background: #2d3748;
+        color: #e2e8f0;
+        padding: 2rem;
+        border-radius: 12px;
+        overflow-x: auto;
+        margin-top: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .code-block h4 {
+        color: #ffd700;
+        margin-top: 0;
+        margin-bottom: 1rem;
+    }
+
+    .code-block code.language-csharp {
+        font-family: 'Fira Mono', 'Consolas', 'Courier New', monospace;
+        font-size: 1rem;
+        color: #e2e8f0;
+        background: none;
+        display: block;
+        white-space: pre;
+    }
+
+    .section-intro {
+        color: #666;
+        font-size: 1.1rem;
+        margin-bottom: 2rem;
+    }
+
+    .crud-mapping {
+        margin: 1.5rem 0 2rem 0;
+        overflow-x: auto;
+    }
+    .crud-mapping table {
+        width: 100%;
+        border-collapse: collapse;
+        background: #f8f9fa;
+        border-radius: 8px;
+        overflow: hidden;
+        font-size: 1rem;
+    }
+    .crud-mapping th, .crud-mapping td {
+        padding: 0.7rem 1.2rem;
+        border-bottom: 1px solid #e0e0e0;
+        text-align: left;
+    }
+    .crud-mapping th {
+        background: #667eea;
+        color: white;
+        font-weight: 600;
+    }
+    .crud-mapping tr:last-child td {
+        border-bottom: none;
+    }
+    .methods-other-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 1rem;
+        margin-top: 1.5rem;
+    }
+    .methods-other-grid .method-card.other {
+        min-height: 120px;
+    }
+
+    .method-card.other.patch {
+        border-left-color: #b97aff;
+        background: linear-gradient(135deg, #f3e8ff, #e0d7fa);
+    }
+    .method-card.other.head {
+        border-left-color: #ebebeb;
+        background: linear-gradient(135deg, #f7f7f7, #ebebeb);
+    }
+    .method-card.other.options {
+        border-left-color: #0d5aa7;
+        background: linear-gradient(135deg, #e0eaff, #d0e0f7);
+    }
+    .method-card.other.trace {
+        border-left-color: #ebebeb;
+        background: linear-gradient(135deg, #f7f7f7, #ebebeb);
+    }
+
+    @@media (max-width: 768px) {
+        .api-calls-container {
+            padding: 1rem;
+        }
+
+        .api-title {
+            font-size: 2rem;
+        }
+
+        .api-flow {
+            flex-direction: column;
+        }
+
+        .flow-arrow {
+            transform: rotate(90deg);
+            margin: 1rem 0;
+        }
+
+        .https-comparison {
+            flex-direction: column;
+        }
+
+        .vs-divider {
+            transform: rotate(90deg);
+            margin: 1rem 0;
+        }
+
+        .methods-main-grid,
+        .status-codes,
+        .encryption-flow,
+        .importance-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+
+@code
+{
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await JS.InvokeVoidAsync("PrismHighlight");
+        }
+    }
+
+    [Inject] IJSRuntime JS { get; set; }
+}

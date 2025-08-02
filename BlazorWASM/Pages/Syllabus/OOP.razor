@@ -1,0 +1,676 @@
+@page "/oop"
+
+<PageTitle>Udvidet OOP - H2 Studieplan</PageTitle>
+
+<div class="oop-container">
+    <div class="oop-header">
+        <h1 class="oop-title">
+            <i class="fas fa-cubes"></i>
+            Udvidet OOP i C#
+        </h1>
+        <p class="oop-subtitle">Avancerede objektorienterede teknikker og trådprogrammering</p>
+    </div>
+
+    <!-- Table of Contents -->
+    <div class="toc-section">
+        <h2><i class="fas fa-list"></i> Indholdsfortegnelse</h2>
+        <div class="toc-grid">
+            <a href="/oop#funktion-pointers" class="toc-item">
+                <i class="fas fa-share-alt"></i>
+                <span>Funktion pointers & Callbacks</span>
+            </a>
+            <a href="/oop#asynkron-programmering" class="toc-item">
+                <i class="fas fa-random"></i>
+                <span>Asynkron programmering med threads</span>
+            </a>
+            <a href="/oop#thread-safety" class="toc-item">
+                <i class="fas fa-lock"></i>
+                <span>Thread Safety & Atomic State</span>
+            </a>
+            <a href="/oop#async-vs-threads" class="toc-item">
+                <i class="fas fa-globe"></i>
+                <span>Async vs Threads i Web</span>
+            </a>
+            <a href="/oop#oop-repetition" class="toc-item">
+                <i class="fas fa-rocket"></i>
+                <span>OOP Repetition</span>
+            </a>
+        </div>
+    </div>
+
+    <!-- Funktion pointers & Callbacks -->
+    <div id="funktion-pointers" class="content-section">
+        <h2><i class="fas fa-share-alt"></i> Funktion pointers & Callbacks</h2>
+        <div class="explanation-card">
+            <p>
+                En <strong>funktion pointer</strong> (i C# kaldet en <strong>delegate</strong>) er en reference til en metode. Det gør det muligt at sende metoder som argumenter og lave <strong>callbacks</strong>.
+            </p>
+            <p>
+                <strong>Callback:</strong> En metode der kaldes, når en opgave er færdig – ofte brugt i asynkrone scenarier.
+            </p>
+            <div class="code-block">
+                <h4>Delegate & Callback eksempel</h4>
+                <pre><code class="language-csharp">// Definer en delegate
+delegate void MyCallback(string message);
+
+// Metode der tager en callback som parameter
+void DoSomethingAsync(MyCallback callback)
+{
+    // Simulerer arbejde
+    Thread.Sleep(1000);
+    callback("Done!");
+}
+
+// Brug af callback
+DoSomethingAsync(message => Console.WriteLine($"Callback: {message}"));
+</code></pre>
+            </div>
+        </div>
+    </div>
+
+    <!-- Asynkron programmering med threads -->
+    <div id="asynkron-programmering" class="content-section">
+        <h2><i class="fas fa-random"></i> Asynkron programmering med threads</h2>
+        <div class="explanation-card">
+            <p>
+                En <strong>tråd</strong> (thread) gør det muligt at køre flere opgaver parallelt. I C# kan du bruge <code>Thread</code>, <code>Task</code> eller <code>ThreadPool</code>.
+            </p>
+            <div class="methods-grid">
+                <div class="method-card get">
+                    <h4>Thread</h4>
+                    <pre><code class="language-csharp">// Start en ny tråd
+Thread t = new Thread(() => Console.WriteLine("Hej fra en tråd!"));
+t.Start();</code></pre>
+                    <div class="explanation-text">
+                        <p><code>Thread</code> er den mest basale måde at arbejde med tråde i C#:</p>
+                        <ul>
+                            <li>Opretter en ny tråd direkte i operativsystemet</li>
+                            <li>Kræver mere ressourcer end andre metoder</li>
+                            <li>Giver fuld kontrol over trådens livscyklus</li>
+                            <li>Kan være farligt at bruge forkert - kan føre til memory leaks</li>
+                        </ul>
+                        <p>Bemærk: I moderne C# anbefales det at bruge <code>Task</code> i stedet, da det er mere effektivt og sikrere.</p>
+                    </div>
+                </div>
+                <div class="method-card post">
+                    <h4>Task</h4>
+                    <pre><code class="language-csharp">// Start en Task (foretrækkes i moderne C#)
+await Task.Run(() => Console.WriteLine("Hej fra en Task!"));</code></pre>
+                    <div class="explanation-text">
+                        <p><code>Task</code> er den moderne og anbefalede måde at håndtere asynkron kode:</p>
+                        <ul>
+                            <li>Bruger ThreadPool internt for bedre ressourcestyring</li>
+                            <li>Understøtter <code>async/await</code> for mere læsbar kode</li>
+                            <li>Giver mulighed for at håndtere fejl med try/catch</li>
+                            <li>Kan kædes sammen med <code>ContinueWith</code> eller <code>await</code></li>
+                        </ul>
+                        <p>Tasks er mere fleksible og lettere at arbejde med end direkte tråd-håndtering.</p>
+                    </div>
+                </div>
+                <div class="method-card put">
+                    <h4>ThreadPool</h4>
+                    <pre><code class="language-csharp">// Brug ThreadPool til baggrundsarbejde
+ThreadPool.QueueUserWorkItem(_ => Console.WriteLine("Hej fra ThreadPool!"));</code></pre>
+                    <div class="explanation-text">
+                        <p><code>ThreadPool</code> er en pool af genbrugelige tråde:</p>
+                        <ul>
+                            <li>Optimerer ressourcernes brug ved at genbruge tråde</li>
+                            <li>Automatisk skalering af antal tråde baseret på arbejdsbelastning</li>
+                            <li>God til korte baggrundsopgaver</li>
+                            <li>Kræver mindre hukommelse end at oprette nye tråde</li>
+                        </ul>
+                        <p>ThreadPool er ideel til korte opgaver, men bør ikke bruges til langvarige operationer, da det kan påvirke ydeevnen for andre opgaver i poolen.</p>
+                    </div>
+                </div>
+            </div>
+            <p>
+                <strong>Async/await</strong> gør det nemt at skrive asynkron kode uden at tænke på tråde direkte:
+            </p>
+            <div class="code-block">
+                <pre><code class="language-csharp">public async Task GetDataAsync()
+{
+    var data = await httpClient.GetStringAsync("https://opgaver.mercantec.tech/data");
+    Console.WriteLine(data);
+}
+</code></pre>
+            </div>
+        </div>
+    </div>
+
+    <!-- Thread Safety & Atomic State -->
+    <div id="thread-safety" class="content-section">
+        <h2><i class="fas fa-lock"></i> Thread Safety & Atomic State</h2>
+        <div class="explanation-card">
+            <p>
+                <strong>Thread safety</strong> betyder at flere tråde kan tilgå og ændre data uden at skabe fejl eller inkonsistens.
+            </p>
+            <p>
+                <strong>Atomic state</strong> betyder at en operation er udelelig – den kan ikke afbrydes halvvejs.
+            </p>
+            <div class="methods-grid">
+                <div class="method-card delete">
+                    <h4>Race condition eksempel</h4>
+                    <pre><code class="language-csharp">@(@"int counter = 0;
+void Increment()
+{
+    for (int i = 0; i < 1000; i++)
+        counter++;
+}
+// Calling Increment from multiple threads = error!")</code></pre>
+                    <div class="explanation-text">
+                        <p>Dette eksempel viser en klassisk race condition. Når flere tråde kører <code>Increment()</code> samtidigt, kan følgende ske:</p>
+                        <ul>
+                            <li>Tråd 1 læser værdien af counter (f.eks. 5)</li>
+                            <li>Tråd 2 læser også værdien (5)</li>
+                            <li>Begge tråde øger deres lokale kopi til 6</li>
+                            <li>Begge tråde skriver 6 tilbage til counter</li>
+                        </ul>
+                        <p>Resultatet er at counter kun øges med 1, selvom to tråde prøvede at øge den. Dette kan føre til uforudsigelige resultater og fejl i programmet.</p>
+                    </div>
+                </div>
+                <div class="method-card get">
+                    <h4>Løsning med lock</h4>
+                    <pre><code class="language-csharp">@(@"object _lock = new object();
+void Increment()
+{
+    for (int i = 0; i < 1000; i++)
+    {
+        lock(_lock)
+        {
+            counter++;
+        }
+    }
+}")</code></pre>
+                    <div class="explanation-text">
+                        <p>Løsningen med <code>lock</code> sikrer at kun én tråd ad gangen kan udføre den kritiske sektion (counter++):</p>
+                        <ul>
+                            <li>Når en tråd kommer til <code>lock</code>-blokken, tjekker den om låsen er ledig</li>
+                            <li>Hvis låsen er ledig, tager tråden låsen og fortsætter</li>
+                            <li>Andre tråde må vente indtil låsen frigives</li>
+                            <li>Når tråden er færdig, frigives låsen automatisk</li>
+                        </ul>
+                        <p>Dette sikrer at counter altid øges korrekt, men kan påvirke ydeevnen hvis der er mange tråde der venter.</p>
+                    </div>
+                </div>
+                <div class="method-card post">
+                    <h4>Atomic med Interlocked</h4>
+                    <pre><code class="language-csharp">@(@"void Increment()
+{
+    for (int i = 0; i < 1000; i++)
+        Interlocked.Increment(ref counter);
+}")</code></pre>
+                    <div class="explanation-text">
+                        <p><code>Interlocked.Increment</code> er en atomisk operation, der gør hele inkrementeringen i ét uafbrudt skridt:</p>
+                        <ul>
+                            <li>Operationen er garanteret at være atomisk på CPU-niveau</li>
+                            <li>Kræver ikke eksplicit låsning</li>
+                            <li>Er generelt hurtigere end <code>lock</code> for simple operationer</li>
+                            <li>Kan kun bruges til specifikke atomiske operationer (Increment, Decrement, Add, Exchange, etc.)</li>
+                        </ul>
+                        <p>Dette er den mest effektive løsning for simple atomiske operationer, da den undgår overhead fra låsning.</p>
+                    </div>
+                </div>
+            </div>
+            <p>
+                <strong>Andre vigtige teknikker:</strong>
+            </p>
+            <div class="techniques-grid">
+                <div class="technique-item">
+                    <h5><i class="fas fa-bolt"></i> Volatile</h5>
+                    <p>Markerer en variabel som volatile for at sikre at den altid læses fra hovedhukommelsen og ikke fra CPU-cache.</p>
+                    <a href="https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/volatile" target="_blank" class="doc-link">
+                        <i class="fas fa-external-link-alt"></i> Læs mere om volatile
+                    </a>
+                </div>
+                <div class="technique-item">
+                    <h5><i class="fas fa-shield-alt"></i> Monitor</h5>
+                    <p>Giver mere finjusteret kontrol over låsning end lock, med mulighed for at vente og notificere tråde.</p>
+                    <a href="https://learn.microsoft.com/en-us/dotnet/fundamentals/runtime-libraries/system-threading-monitor" target="_blank" class="doc-link">
+                        <i class="fas fa-external-link-alt"></i> Læs mere om Monitor
+                    </a>
+                </div>
+                <div class="technique-item">
+                    <h5><i class="fas fa-lock"></i> Mutex</h5>
+                    <p>En systemomfattende lås der kan bruges på tværs af processer, ikke kun tråde.</p>
+                    <a href="https://learn.microsoft.com/en-us/dotnet/standard/threading/mutexes" target="_blank" class="doc-link">
+                        <i class="fas fa-external-link-alt"></i> Læs mere om Mutex
+                    </a>
+                </div>
+                <div class="technique-item">
+                    <h5><i class="fas fa-traffic-light"></i> Semaphore</h5>
+                    <p>Lader et bestemt antal tråde adgang til en ressource samtidigt, nyttig for ressourcebegrænsning.</p>
+                    <a href="https://learn.microsoft.com/en-us/cpp/cppcx/wrl/semaphore-class?view=msvc-170" target="_blank" class="doc-link">
+                        <i class="fas fa-external-link-alt"></i> Læs mere om Semaphore
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Hurtig repetition af grundlæggende OOP -->
+    <div id="oop-repetition" class="content-section">
+        <h2><i class="fas fa-rocket"></i> OOP Repetition (kort)</h2>
+        <div class="oop-recap-grid">
+            <div class="oop-recap-item">
+                <h4><i class="fas fa-box"></i> Indkapsling</h4>
+                <p>Skjul data og logik i klasser – kun nødvendige dele er synlige udefra.</p>
+            </div>
+            <div class="oop-recap-item">
+                <h4><i class="fas fa-sitemap"></i> Arv</h4>
+                <p>En klasse kan arve egenskaber og metoder fra en anden klasse.</p>
+            </div>
+            <div class="oop-recap-item">
+                <h4><i class="fas fa-shapes"></i> Polymorfi</h4>
+                <p>Samme metode kan opføre sig forskelligt afhængigt af objektet.</p>
+            </div>
+            <div class="oop-recap-item">
+                <h4><i class="fas fa-puzzle-piece"></i> Interface</h4>
+                <p>En kontrakt for hvad en klasse skal kunne – men ikke hvordan.</p>
+            </div>
+            <div class="oop-recap-item">
+                <h4><i class="fas fa-exclamation-triangle"></i> Exception Handling</h4>
+                <p>Håndter fejl med try/catch og kast egne exceptions.</p>
+            </div>
+            <div class="oop-recap-item">
+                <h4><i class="fas fa-layer-group"></i> Collections</h4>
+                <p>Array, List, Dictionary – vælg den rigtige til opgaven.</p>
+            </div>
+            <div class="oop-recap-item">
+                <h4><i class="fas fa-key"></i> Access Modifiers</h4>
+                <p>Styr hvem der kan se og ændre dine felter og metoder</p>
+                <p>
+                    + public: Synlig for alle<br>
+                    - private: Kun synlig i klassen<br>
+                    # protected: Synlig i klassen og arvende klasser<br>
+                </p>
+            </div>
+            <div class="oop-recap-item">
+                <h4><i class="fas fa-code-branch"></i> Override & Overload</h4>
+                <p>Override: Erstat en arvet metode. Overload: Samme navn kan eksistere med forskellige parametre.</p>
+            </div>
+            <div class="oop-recap-item">
+                <h4><i class="fas fa-ghost"></i> Abstrakte klasser/metoder</h4>
+                <p>Kan ikke instantieres direkte – bruges som base for andre klasser.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Async vs Threads i Web Applikationer -->
+    <div id="async-vs-threads" class="content-section">
+        <h2><i class="fas fa-globe"></i> Async vs Threads i Web Applikationer</h2>
+        <div class="explanation-card">
+            <p>
+                I web-applikationer, især i Blazor WASM, er det vigtigt at forstå forskellen mellem asynkron programmering og direkte tråd-håndtering.
+            </p>
+            <div class="methods-grid">
+                <div class="method-card get">
+                    <h4>Async/Await i Web</h4>
+                    <pre><code class="language-csharp">// Asynkron metode i Blazor
+public async Task OnInitializedAsync()
+{
+    // Vent på data fra API
+    var data = await httpClient.GetFromJsonAsync&lt;WeatherForecast[]&gt;("api/weather");
+    // UI forbliver responsivt under ventetiden
+}</code></pre>
+                    <div class="explanation-text">
+                        <p>Asynkron programmering i web-applikationer:</p>
+                        <ul>
+                            <li>Bruger ikke ekstra tråde - kører på UI-tråden</li>
+                            <li>Giver UI-tråden mulighed for at håndtere andre opgaver under I/O ventetid</li>
+                            <li>Perfekt til I/O-operationer (API kald, database, filsystem)</li>
+                            <li>Minimal CPU-forbrug under ventetid</li>
+                        </ul>
+                        <p>Dette er den anbefalede måde at håndtere asynkrone operationer i Blazor WASM, da det bevarer UI-responsiviteten.</p>
+                    </div>
+                </div>
+                <div class="method-card delete">
+                    <h4>Thread i Web (Ikke Anbefalet)</h4>
+                    <pre><code class="language-csharp">// Dette er IKKE anbefalet i Blazor WASM
+public void OnInitialized()
+{
+    // Dette vil blokere UI-tråden
+    Thread t = new Thread(() => {
+        // Tung CPU-operation
+        var result = CalculateComplexData();
+        // UI opdatering vil fejle - forkert tråd
+        StateHasChanged();
+    });
+    t.Start();
+}</code></pre>
+                    <div class="explanation-text">
+                        <p>Problemer med direkte tråd-håndtering i web:</p>
+                        <ul>
+                            <li>Blazor WASM kører i browseren med én UI-tråd</li>
+                            <li>Nye tråde kan ikke oprettes i browseren</li>
+                            <li>UI-opdateringer skal ske på UI-tråden</li>
+                            <li>Kan føre til UI-frysninger og dårlig brugeroplevelse</li>
+                        </ul>
+                        <p>I Blazor WASM skal vi undgå direkte tråd-håndtering og i stedet bruge asynkron programmering.</p>
+                    </div>
+                </div>
+                <div class="method-card post">
+                    <h4>Korrekt Måde at Håndtere Tungt Arbejde</h4>
+                    <pre><code class="language-csharp">// Korrekt måde at håndtere tungt arbejde i Blazor
+public async Task CalculateComplexData()
+{
+    // Vis loading indikator
+    IsLoading = true;
+    StateHasChanged();
+
+    // Brug Task.Run til CPU-intensive opgaver
+    var result = await Task.Run(() => {
+        return CalculateComplexData();
+    });
+
+    // Opdater UI på UI-tråden
+    Data = result;
+    IsLoading = false;
+    StateHasChanged();
+}</code></pre>
+                    <div class="explanation-text">
+                        <p>Best practices for CPU-intensive opgaver:</p>
+                        <ul>
+                            <li>Brug <code>Task.Run</code> kun til CPU-intensive opgaver</li>
+                            <li>Hold UI-opdateringer på UI-tråden</li>
+                            <li>Vis loading indikatorer under tungt arbejde</li>
+                            <li>Brug <code>StateHasChanged()</code> efter UI-opdateringer</li>
+                        </ul>
+                        <p>Dette sikrer en responsiv UI og korrekt håndtering af asynkrone operationer i Blazor WASM.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="info-box">
+                <h4><i class="fas fa-info-circle"></i> Vigtigt at Husk</h4>
+                <ul>
+                    <li>Blazor WASM kører i browseren med én UI-tråd</li>
+                    <li>Asynkron programmering er ikke det samme som parallel programmering</li>
+                    <li>Brug <code>async/await</code> til I/O-operationer</li>
+                    <li>Brug <code>Task.Run</code> kun til CPU-intensive opgaver</li>
+                    <li>Hold UI-opdateringer på UI-tråden</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .oop-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 2rem;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    .oop-header {
+        text-align: center;
+        margin-bottom: 3rem;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 3rem 2rem;
+        border-radius: 20px;
+        box-shadow: 0 20px 40px rgba(102, 126, 234, 0.1);
+    }
+    .oop-title {
+        font-size: 3rem;
+        font-weight: 700;
+        margin-bottom: 1rem;
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+    .oop-title i {
+        margin-right: 1rem;
+        color: #ffd700;
+    }
+    .oop-subtitle {
+        font-size: 1.3rem;
+        opacity: 0.9;
+        font-weight: 300;
+        margin: 0;
+    }
+    .content-section {
+        background: white;
+        border-radius: 15px;
+        padding: 2rem;
+        margin-bottom: 2rem;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        border-left: 5px solid #667eea;
+    }
+    .content-section h2 {
+        color: #333;
+        margin-bottom: 1.5rem;
+        font-size: 1.8rem;
+    }
+    .content-section h2 i {
+        color: #667eea;
+        margin-right: 0.5rem;
+    }
+    .explanation-card {
+        background: #f8f9fa;
+        padding: 2rem;
+        border-radius: 12px;
+        margin-bottom: 1rem;
+    }
+    .methods-grid {
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+        margin-top: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+    .method-card {
+        border-radius: 12px;
+        padding: 1.5rem;
+        border-left: 4px solid;
+        transition: transform 0.3s ease;
+        background: #f8f9fa;
+        width: 100%;
+    }
+    .method-card.get { border-left-color: #28a745; }
+    .method-card.post { border-left-color: #007bff; }
+    .method-card.put { border-left-color: #ffc107; }
+    .method-card.delete { border-left-color: #dc3545; }
+    .method-card h4 {
+        color: #667eea;
+        margin-top: 0;
+        margin-bottom: 1rem;
+    }
+    .code-block {
+        background: #2d3748;
+        color: #e2e8f0;
+        padding: 2rem;
+        border-radius: 12px;
+        overflow-x: auto;
+        margin-top: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+    .code-block h4 {
+        color: #ffd700;
+        margin-top: 0;
+        margin-bottom: 1rem;
+    }
+    .code-block code.language-csharp {
+        font-family: 'Fira Mono', 'Consolas', 'Courier New', monospace;
+        font-size: 1rem;
+        color: #e2e8f0;
+        background: none;
+        display: block;
+        white-space: pre;
+    }
+    .explanation-text {
+        margin-top: 1rem;
+        padding: 1rem;
+        background: #f0f4f8;
+        border-radius: 8px;
+        font-size: 0.95rem;
+    }
+    .explanation-text ul {
+        margin: 0.5rem 0;
+        padding-left: 1.5rem;
+    }
+    .explanation-text li {
+        margin-bottom: 0.5rem;
+    }
+    .explanation-text code {
+        background: #e2e8f0;
+        padding: 0.2rem 0.4rem;
+        border-radius: 4px;
+        font-family: 'Fira Mono', 'Consolas', 'Courier New', monospace;
+    }
+    .oop-recap-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1.5rem;
+        margin-top: 1.5rem;
+    }
+    .oop-recap-item {
+        text-align: center;
+        padding: 1.5rem;
+        background: #f8f9fa;
+        border-radius: 12px;
+        border-top: 4px solid #667eea;
+    }
+    .oop-recap-item i {
+        font-size: 2.5rem;
+        color: #667eea;
+        margin-bottom: 1rem;
+    }
+    .techniques-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1rem;
+        margin-top: 1rem;
+    }
+    .technique-item {
+        background: #f8f9fa;
+        padding: 1.5rem;
+        border-radius: 8px;
+        border-left: 3px solid #667eea;
+    }
+    .technique-item h5 {
+        color: #2d3748;
+        margin: 0 0 0.5rem 0;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    .technique-item h5 i {
+        color: #667eea;
+    }
+    .technique-item p {
+        margin: 0 0 0.5rem 0;
+        font-size: 0.9rem;
+        color: #4a5568;
+    }
+    .doc-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.3rem;
+        color: #667eea;
+        text-decoration: none;
+        font-size: 0.9rem;
+        transition: color 0.2s ease;
+    }
+    .doc-link:hover {
+        color: #5a67d8;
+        text-decoration: underline;
+    }
+    .doc-link i {
+        font-size: 0.8rem;
+    }
+    .info-box {
+        background: #e3f2fd;
+        border-left: 4px solid #2196f3;
+        padding: 1.5rem;
+        border-radius: 8px;
+        margin-top: 2rem;
+    }
+    .info-box h4 {
+        color: #1976d2;
+        margin: 0 0 1rem 0;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    .info-box ul {
+        margin: 0;
+        padding-left: 1.5rem;
+    }
+    .info-box li {
+        margin-bottom: 0.5rem;
+        color: #0d47a1;
+    }
+    .toc-section {
+        background: white;
+        border-radius: 15px;
+        padding: 2rem;
+        margin-bottom: 2rem;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        border-left: 5px solid #667eea;
+    }
+    .toc-section h2 {
+        color: #333;
+        margin-bottom: 1.5rem;
+        font-size: 1.8rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    .toc-section h2 i {
+        color: #667eea;
+    }
+    .toc-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1rem;
+    }
+    .toc-item {
+        display: flex;
+        align-items: center;
+        gap: 0.8rem;
+        padding: 1rem;
+        background: #f8f9fa;
+        border-radius: 8px;
+        text-decoration: none;
+        color: #2d3748;
+        transition: all 0.3s ease;
+        border-left: 3px solid #667eea;
+    }
+    .toc-item:hover {
+        transform: translateX(5px);
+        background: #edf2f7;
+        color: #4a5568;
+    }
+    .toc-item i {
+        color: #667eea;
+        font-size: 1.2rem;
+    }
+    .toc-item span {
+        font-weight: 500;
+    }
+    @@media (max-width: 768px) {
+        .oop-container {
+            padding: 1rem;
+        }
+        .oop-title {
+            font-size: 2rem;
+        }
+        .methods-grid,
+        .oop-recap-grid,
+        .techniques-grid {
+            grid-template-columns: 1fr;
+        }
+        .toc-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+
+@code {
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await JS.InvokeVoidAsync("PrismHighlight");
+        }
+    }
+
+    [Inject] IJSRuntime JS { get; set; }
+}

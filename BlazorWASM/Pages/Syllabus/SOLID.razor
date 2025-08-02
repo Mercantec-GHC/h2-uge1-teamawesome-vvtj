@@ -1,0 +1,419 @@
+@page "/solid"
+
+<PageTitle>SOLID Principperne - OOP</PageTitle>
+
+<div class="solid-container">
+    <div class="solid-header">
+        <h1>
+            <span class="solid-letter s">S</span>
+            <span class="solid-letter o">O</span>
+            <span class="solid-letter l">L</span>
+            <span class="solid-letter i">I</span>
+            <span class="solid-letter d">D</span>
+            Principperne
+        </h1>
+        <p class="solid-subtitle">5 grundlæggende principper for god objektorienteret design</p>
+        <p class="solid-intro">SOLID er en samling af fem principper, der hjælper dig med at skrive fleksibel, vedligeholdelsesvenlig og robust kode.</p>
+        <p class="solid-intro">FreeCodeCamp har en god video om SOLID principperne - <a href="https://youtu.be/rylaiB2uH2A?t=4440" target="_blank"><img src="/assets/FreeCodeCamp.png" alt="freeCodeCamp logo" class="fcc-logo small" /></a></p>
+    </div>
+    <div class="solid-list">
+        <div class="solid-section s">
+            <div class="solid-label"><span class="solid-letter s">S</span></div>
+            <div class="solid-content">
+                <div class="solid-title-row">
+                    <h2>Single Responsibility Principle -</h2>
+                    <a href="https://youtu.be/rylaiB2uH2A?t=4501" target="_blank" class="fcc-logo-link" title="Se video (1:15:01)">
+                        <img src="/assets/FreeCodeCamp.png" alt="freeCodeCamp video" class="fcc-logo small" />
+                    </a>
+                </div>
+                <p>En klasse eller metode skal kun have ét ansvar. Det gør koden lettere at forstå, teste og vedligeholde. Hvis en klasse har flere grunde til at ændre sig, bør den deles op.</p>
+                <div class="solid-example">
+                    <pre><code class="language-csharp">// Dårligt:
+public class User {
+    public void Save() { /* gem til database */ }
+    public void Validate() { /* tjek data */ }
+}
+// Godt:
+public class User { }
+public class UserRepository {
+    public void Save(User u) { /* gem til database */ }
+}
+public class UserValidator {
+    public void Validate(User u) { /* tjek data */ }
+}
+</code></pre>
+                </div>
+                <div class="solid-example">
+                    <pre><code class="language-csharp">// Eksempel: Logik og UI adskilt
+// Dårligt:
+public class InvoiceForm {
+    public void SaveInvoice() { /* gem og vis besked */ }
+}
+// Godt:
+public class InvoiceSaver {
+    public void Save(Invoice i) { /* gem */ }
+}
+public class InvoiceForm { /* kun UI */ }
+</code></pre>
+                </div>
+            </div>
+        </div>
+        <div class="solid-section o">
+            <div class="solid-label"><span class="solid-letter o">O</span></div>
+            <div class="solid-content">
+                <div class="solid-title-row">
+                    <h2>Open/Closed Principle -</h2>
+                    <a href="https://youtu.be/rylaiB2uH2A?t=4886" target="_blank" class="fcc-logo-link" title="Se video (1:21:26)">
+                        <img src="/assets/FreeCodeCamp.png" alt="freeCodeCamp video" class="fcc-logo small" />
+                    </a>
+                </div>
+                <p>Klasser, moduler og funktioner skal kunne udvides uden at ændre deres eksisterende kode. Det opnås ofte med arv eller interfaces.</p>
+                <div class="solid-example">
+                    <pre><code class="language-csharp">// Dårligt:
+public class AreaCalculator {
+    public double Area(object shape) {
+        if (shape is Circle c) return Math.PI * c.Radius * c.Radius;
+        if (shape is Square s) return s.Side * s.Side;
+        // ... flere ifs ...
+    }
+}
+// Godt:
+public interface IShape { double Area(); }
+public class Circle : IShape {
+    public double Radius;
+    public double Area() => Math.PI * Radius * Radius;
+}
+public class Square : IShape {
+    public double Side;
+    public double Area() => Side * Side;
+}
+</code></pre>
+                </div>
+                <div class="solid-example">
+                    <pre><code class="language-csharp">// Eksempel: Udvid med ny type uden at ændre eksisterende kode
+public class Triangle : IShape {
+    public double Base, Height;
+    public double Area() => 0.5 * Base * Height;
+}
+</code></pre>
+                </div>
+            </div>
+        </div>
+        <div class="solid-section l">
+            <div class="solid-label"><span class="solid-letter l">L</span></div>
+            <div class="solid-content">
+                <div class="solid-title-row">
+                    <h2>Liskov Substitution Principle -</h2>
+                    <a href="https://youtu.be/rylaiB2uH2A?t=5720" target="_blank" class="fcc-logo-link" title="Se video (1:32:20)">
+                        <img src="/assets/FreeCodeCamp.png" alt="freeCodeCamp video" class="fcc-logo small" />
+                    </a>
+                </div>
+                <p>Du skal kunne bruge en subklasse i stedet for en basisklasse uden at programmet opfører sig uventet. Subklasser må ikke bryde kontrakten fra basisklassen.</p>
+                <div class="solid-example">
+                    <pre><code class="language-csharp">// Dårligt:
+public class Rectangle {
+    public virtual int Width { get; set; }
+    public virtual int Height { get; set; }
+}
+public class Square : Rectangle {
+    public override int Width { set { base.Width = base.Height = value; } }
+    public override int Height { set { base.Width = base.Height = value; } }
+}
+// Brug af Square som Rectangle kan give uventet adfærd!</code></pre>
+                </div>
+                <div class="solid-example">
+                    <pre><code class="language-csharp">// Godt:
+public interface IShape { int Area(); }
+public class Rectangle : IShape {
+    public int Width, Height;
+    public int Area() => Width * Height;
+}
+public class Square : IShape {
+    public int Side;
+    public int Area() => Side * Side;
+}
+</code></pre>
+                </div>
+            </div>
+        </div>
+        <div class="solid-section i">
+            <div class="solid-label"><span class="solid-letter i">I</span></div>
+            <div class="solid-content">
+                <div class="solid-title-row">
+                    <h2>Interface Segregation Principle -</h2>
+                    <a href="https://youtu.be/rylaiB2uH2A?t=6320" target="_blank" class="fcc-logo-link" title="Se video (1:45:20)">
+                        <img src="/assets/FreeCodeCamp.png" alt="freeCodeCamp video" class="fcc-logo small" />
+                    </a>
+                </div>
+                <p>Ingen skal tvinges til at implementere metoder, de ikke har brug for. Del store interfaces op i mindre, mere specifikke interfaces.</p>
+                <div class="solid-example">
+                    <pre><code class="language-csharp">// Dårligt:
+public interface IMaskine {
+    void Print();
+    void Scan();
+    void Fax();
+}
+public class Printer : IMaskine {
+    public void Print() { }
+    public void Scan() { throw new NotImplementedException(); }
+    public void Fax() { throw new NotImplementedException(); }
+}
+// Printer skal implementere metoder, den ikke bruger!</code></pre>
+                </div>
+                <div class="solid-example">
+                    <pre><code class="language-csharp">// Godt:
+public interface IPrinter { void Print(); }
+public interface IScanner { void Scan(); }
+public class Printer : IPrinter {
+    public void Print() { }
+}
+</code></pre>
+                </div>
+            </div>
+        </div>
+        <div class="solid-section d">
+            <div class="solid-label"><span class="solid-letter d">D</span></div>
+            <div class="solid-content">
+                <div class="solid-title-row">
+                    <h2>Dependency Inversion Principle -</h2>
+                    <a href="https://youtu.be/rylaiB2uH2A?t=6850" target="_blank" class="fcc-logo-link" title="Se video (1:54:10)">
+                        <img src="/assets/FreeCodeCamp.png" alt="freeCodeCamp video" class="fcc-logo small" />
+                    </a>
+                </div>
+                <p>Høj-niveau moduler skal ikke afhænge af lav-niveau moduler, men af abstraktioner. Brug interfaces eller abstrakte klasser til afhængigheder, så du kan udskifte implementeringer nemt.</p>
+                <div class="solid-example">
+                    <pre><code class="language-csharp">// Dårligt:
+public class FileLogger {
+    public void Log(string msg) { /* skriv til fil */ }
+}
+public class UserService {
+    private FileLogger logger = new FileLogger();
+    public void DoSomething() { logger.Log("Noget skete"); }
+}
+</code></pre>
+                </div>
+                <div class="solid-example">
+                    <pre><code class="language-csharp">// Godt:
+public interface ILogger {
+    void Log(string msg);
+}
+public class FileLogger : ILogger {
+    public void Log(string msg) { /* skriv til fil */ }
+}
+public class UserService {
+    private ILogger logger;
+    public UserService(ILogger l) { logger = l; }
+    public void DoSomething() { logger.Log("Noget skete"); }
+}
+</code></pre>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.solid-container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 2rem;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+.solid-header {
+    text-align: center;
+    margin-bottom: 2.5rem;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 2.5rem 2rem 2rem 2rem;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(102, 126, 234, 0.1);
+}
+.solid-header h1 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+}
+.solid-subtitle {
+    font-size: 1.2rem;
+    opacity: 0.9;
+    font-weight: 300;
+    margin-bottom: 1rem;
+}
+.solid-letter {
+    display: inline-block;
+    font-size: 2.5rem;
+    font-weight: bold;
+    margin: 0 0.2rem;
+    padding: 0.5rem 1.2rem;
+    border-radius: 12px;
+    color: white;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.10);
+    vertical-align: middle;
+}
+.solid-letter.s { background: #4fd1c5; }
+.solid-letter.o { background: #4299e1; }
+.solid-letter.l { background: #f6ad55; }
+.solid-letter.i { background: #9f7aea; }
+.solid-letter.d { background: #fc8181; }
+.solid-intro {
+    font-size: 1.15rem;
+    margin-bottom: 0;
+}
+.solid-list {
+    display: flex;
+    flex-direction: column;
+    gap: 2.5rem;
+}
+.solid-section {
+    display: flex;
+    align-items: flex-start;
+    gap: 2rem;
+    background: #f8f9fa;
+    border-radius: 16px;
+    box-shadow: 0 2px 12px rgba(102, 126, 234, 0.07);
+    padding: 2rem 1.5rem;
+    border-left: 10px solid #667eea;
+}
+.solid-section.s { border-left-color: #4fd1c5; }
+.solid-section.o { border-left-color: #4299e1; }
+.solid-section.l { border-left-color: #f6ad55; }
+.solid-section.i { border-left-color: #9f7aea; }
+.solid-section.d { border-left-color: #fc8181; }
+.solid-label {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 70px;
+}
+.solid-section .solid-letter {
+    font-size: 3.2rem;
+    margin: 0;
+    padding: 0.7rem 1.5rem;
+    border-radius: 16px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.10);
+}
+.solid-content {
+    flex: 1;
+}
+.solid-section h2 {
+    margin: 0 0 0.5rem 0;
+    font-size: 1.4rem;
+    color: #333;
+}
+.solid-section p {
+    font-size: 1.08rem;
+    color: #444;
+    margin-bottom: 1rem;
+}
+.solid-example {
+    background: #e9eafc;
+    border-radius: 8px;
+    padding: 0.8rem 1rem;
+    font-size: 0.98rem;
+    color: #2d3748;
+    font-family: 'Fira Mono', 'Consolas', 'Courier New', monospace;
+    margin-top: 1rem;
+    text-align: left;
+    min-height: 60px;
+}
+@@media (max-width: 700px) {
+    .solid-section {
+        flex-direction: column;
+        gap: 1rem;
+        padding: 1.2rem 0.7rem;
+    }
+    .solid-section .solid-letter {
+        font-size: 2.2rem;
+        padding: 0.5rem 1.1rem;
+    }
+}
+.solid-videos {
+    background: #f8f9fa;
+    border-radius: 12px;
+    padding: 1.2rem 1.5rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 2px 8px rgba(102, 126, 234, 0.07);
+    text-align: left;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+    display: flex;
+    align-items: center;
+    gap: 1.2rem;
+}
+.fcc-logo-row {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+.fcc-logo {
+    width: 48px;
+    height: 48px;
+    border-radius: 8px;
+    background: #fff;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.07);
+}
+.fcc-link {
+    color: #764ba2;
+    text-decoration: underline;
+    font-size: 1.08rem;
+    font-weight: 500;
+    transition: color 0.2s;
+}
+.fcc-link:hover {
+    color: #4299e1;
+}
+.solid-timestamp {
+    font-size: 0.93rem;
+    color: #888;
+    margin-top: 0.5rem;
+    margin-bottom: 0;
+}
+.solid-timestamp a {
+    color: #888;
+    text-decoration: underline;
+    transition: color 0.2s;
+}
+.solid-timestamp a:hover {
+    color: #764ba2;
+}
+.solid-title-row {
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+    margin-bottom: 0.2rem;
+}
+.fcc-logo-link {
+    display: flex;
+    align-items: center;
+    gap: 0.2rem;
+    text-decoration: none;
+}
+.fcc-logo.small {
+    width: 28px;
+    height: 28px;
+    border-radius: 6px;
+    background: #fff;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.07);
+    margin-left: 0.2rem;
+}
+.fcc-timestamp {
+    font-size: 0.93rem;
+    color: #888;
+    margin-left: 0.2rem;
+    font-weight: 400;
+}
+</style>
+
+@code {
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await JS.InvokeVoidAsync("PrismHighlight");
+        }
+    }
+
+    [Inject] IJSRuntime JS { get; set; }
+}

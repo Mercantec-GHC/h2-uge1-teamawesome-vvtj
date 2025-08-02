@@ -1,0 +1,449 @@
+@page "/syllabus"
+@page "/"
+@using Microsoft.AspNetCore.Components.Web
+@inject NavigationManager NavigationManager
+
+<PageTitle>H2 Studieplan - API-kald og OOP & Async</PageTitle>
+
+<div class="syllabus-container">
+    <div class="syllabus-header">
+        <h1 class="syllabus-title">
+            <i class="fas fa-graduation-cap"></i>
+            H2 Uge 1 - Studieplan
+        </h1>
+        <p class="syllabus-subtitle">API-kald fra Klienten, OOP & Async</p>
+    </div>
+
+    <div class="syllabus-intro">
+        <div class="intro-card">
+            <h2><i class="fas fa-info-circle"></i> Om dette modul</h2>
+            <p>
+                Dette modul fokuserer på avancerede programmeringsteknikker og integration mellem klient og server. 
+                Du vil lære at arbejde med API-kald fra klientsiden og dykke dybere ned i objektorienterede principper.
+            </p>
+        </div>
+
+        <div class="learning-objectives">
+            <h3><i class="fas fa-target"></i> Læringsmål</h3>
+            <ul>
+                <li>
+                    <strong>
+                        <span class="nav-link-text" @onclick="NavigateToApiCalls">
+                            API Integration:
+                        </span>
+                    </strong>
+                    Forstå og implementere API-kald fra klient-applikationer
+                </li>
+                <li>
+                    <strong>
+                        <span class="nav-link-text" @onclick="NavigateToOOP">
+                            OOP & Async:
+                        </span>
+                    </strong>
+                    Avancerede objektorienterede design patterns og principper samt asynkron programmering
+                </li>
+                <li>
+                    <strong>
+                        <span class="nav-link-text" @onclick="NavigateToErrorHandling">
+                            Error Handling:
+                        </span>
+                    </strong>
+                    Robust fejlhåndtering i distribuerede systemer
+                </li>
+                <li>
+                    <strong>
+                        <span class="nav-link-text" @onclick="NavigateToDataSerialization">
+                            Data Serialisering:
+                        </span>
+                    </strong>
+                    JSON håndtering og data mapping
+                </li>
+                <li>
+                    <strong>
+                        <span class="nav-link-text" @onclick="NavigateToDesignPatterns">
+                            Design Patterns:
+                        </span>
+                    </strong>
+                    Design patterns og principper
+                </li>
+                <li>
+                    <strong>
+                        <span class="nav-link-text" @onclick="NavigateToSOLID">
+                            SOLID:
+                        </span>
+                    </strong>
+                    SOLID principper
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Backend Status Sektion -->
+    <BackendStatus />
+
+    <div class="syllabus-content">
+        <div class="content-header">
+            <h2><i class="fas fa-book-open"></i> Detaljeret Studieplan</h2>
+            <p>Udforsk den komplette studieplan nedenfor. Du kan navigere gennem materialet og tage noter direkte i Notion.</p>
+        </div>
+
+        <div class="iframe-container">
+            <div class="iframe-wrapper">
+                <iframe 
+                    src="https://mercantec.notion.site/ebd/123dab5ca23780e18ccfcc9af278cfa5" 
+                    title="H2 Studieplan - API-kald og OOP & Async"
+                    frameborder="0" 
+                    allowfullscreen>
+                </iframe>
+                <div class="iframe-overlay" id="iframe-overlay">
+                    <div class="loading-spinner">
+                        <i class="fas fa-spinner fa-spin"></i>
+                        <p>Indlæser studieplan...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="action-buttons">
+            <a href="https://mercantec.notion.site/ebd/123dab5ca23780e18ccfcc9af278cfa5" 
+               target="_blank" 
+               class="btn btn-primary">
+                <i class="fas fa-external-link-alt"></i>
+                Åbn i Notion
+            </a>
+           
+        </div>
+    </div>
+</div>
+
+<style>
+    .syllabus-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 2rem;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    .syllabus-header {
+        text-align: center;
+        margin-bottom: 3rem;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 3rem 2rem;
+        border-radius: 20px;
+        box-shadow: 0 20px 40px rgba(102, 126, 234, 0.1);
+    }
+
+    .syllabus-title {
+        font-size: 3rem;
+        font-weight: 700;
+        margin-bottom: 1rem;
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .syllabus-title i {
+        margin-right: 1rem;
+        color: #ffd700;
+    }
+
+    .syllabus-subtitle {
+        font-size: 1.3rem;
+        opacity: 0.9;
+        font-weight: 300;
+        margin: 0;
+    }
+
+    .syllabus-intro {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 2rem;
+        margin-bottom: 3rem;
+    }
+
+    .intro-card {
+        background: white;
+        padding: 2rem;
+        border-radius: 15px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        border-left: 5px solid #667eea;
+    }
+
+    .intro-card h2 {
+        color: #333;
+        margin-bottom: 1rem;
+        font-size: 1.5rem;
+    }
+
+    .intro-card h2 i {
+        color: #667eea;
+        margin-right: 0.5rem;
+    }
+
+    .intro-card p {
+        color: #666;
+        line-height: 1.6;
+        margin: 0;
+    }
+
+    .learning-objectives {
+        background: white;
+        padding: 2rem;
+        border-radius: 15px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        border-left: 5px solid #764ba2;
+    }
+
+    .learning-objectives h3 {
+        color: #333;
+        margin-bottom: 1.5rem;
+        font-size: 1.3rem;
+    }
+
+    .learning-objectives h3 i {
+        color: #764ba2;
+        margin-right: 0.5rem;
+    }
+
+    .learning-objectives ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    .learning-objectives li {
+        margin-bottom: 1rem;
+        padding-left: 1.5rem;
+        position: relative;
+        color: #555;
+        line-height: 1.5;
+    }
+
+    .learning-objectives li:before {
+        content: '✓';
+        position: absolute;
+        left: 0;
+        color: #28a745;
+        font-weight: bold;
+        font-size: 1.2rem;
+    }
+
+    .learning-objectives li strong {
+        color: #333;
+    }
+
+    .syllabus-content {
+        background: white;
+        border-radius: 20px;
+        padding: 2rem;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+    }
+
+    .content-header {
+        text-align: center;
+        margin-bottom: 2rem;
+    }
+
+    .content-header h2 {
+        color: #333;
+        font-size: 2rem;
+        margin-bottom: 1rem;
+    }
+
+    .content-header h2 i {
+        color: #667eea;
+        margin-right: 0.5rem;
+    }
+
+    .content-header p {
+        color: #666;
+        font-size: 1.1rem;
+        margin: 0;
+    }
+
+    .iframe-container {
+        margin: 2rem 0;
+        position: relative;
+    }
+
+    .iframe-wrapper {
+        position: relative;
+        width: 100%;
+        height: 700px;
+        border-radius: 15px;
+        overflow: hidden;
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+        border: 3px solid #f8f9fa;
+    }
+
+    .iframe-wrapper iframe {
+        width: 100%;
+        height: 100%;
+        border: none;
+    }
+
+    .iframe-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: opacity 0.3s ease;
+        pointer-events: none;
+        opacity: 0;
+    }
+
+    .loading-spinner {
+        text-align: center;
+        color: #667eea;
+    }
+
+    .loading-spinner i {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+    }
+
+    .loading-spinner p {
+        font-size: 1.2rem;
+        margin: 0;
+    }
+
+    .action-buttons {
+        display: flex;
+        gap: 1rem;
+        justify-content: center;
+        margin-top: 2rem;
+    }
+
+    .btn {
+        padding: 0.8rem 2rem;
+        border: none;
+        border-radius: 25px;
+        font-size: 1rem;
+        font-weight: 600;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-align: center;
+    }
+
+    .btn-primary {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+    }
+
+    .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+        color: white;
+        text-decoration: none;
+    }
+
+    .btn-secondary {
+        background: white;
+        color: #667eea;
+        border: 2px solid #667eea;
+    }
+
+    .btn-secondary:hover {
+        background: #667eea;
+        color: white;
+        transform: translateY(-2px);
+    }
+
+    @@media (max-width: 768px) {
+        .syllabus-container {
+            padding: 1rem;
+        }
+
+        .syllabus-intro {
+            grid-template-columns: 1fr;
+            gap: 1rem;
+        }
+
+        .syllabus-title {
+            font-size: 2rem;
+        }
+
+        .syllabus-subtitle {
+            font-size: 1.1rem;
+        }
+
+        .iframe-wrapper {
+            height: 500px;
+        }
+
+        .action-buttons {
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .btn {
+            width: 200px;
+            justify-content: center;
+        }
+    }
+
+    .nav-link-text {
+        color: inherit;
+        text-decoration: none;
+        cursor: pointer;
+        transition: color 0.2s ease;
+    }
+
+    .nav-link-text:hover {
+        color: #667eea;
+    }
+</style>
+
+<script>
+    // Hide loading overlay when iframe loads
+    window.addEventListener('load', function() {
+        setTimeout(function() {
+            const overlay = document.getElementById('iframe-overlay');
+            if (overlay) {
+                overlay.style.opacity = '0';
+                setTimeout(function() {
+                    overlay.style.display = 'none';
+                }, 300);
+            }
+        }, 2000);
+    });
+</script>
+
+@code {
+    private void NavigateToApiCalls()
+    {
+        NavigationManager.NavigateTo("/api-calls");
+    }
+
+    private void NavigateToOOP()
+    {
+        NavigationManager.NavigateTo("/oop");
+    }
+
+    private void NavigateToErrorHandling()
+    {
+        NavigationManager.NavigateTo("/error-handling");
+    }
+
+    private void NavigateToDataSerialization()
+    {
+        NavigationManager.NavigateTo("/data-serialization");
+    }
+    private void NavigateToDesignPatterns()
+    {
+        NavigationManager.NavigateTo("/design-patterns");
+    }
+    private void NavigateToSOLID()
+    {
+        NavigationManager.NavigateTo("/solid");
+    }
+}

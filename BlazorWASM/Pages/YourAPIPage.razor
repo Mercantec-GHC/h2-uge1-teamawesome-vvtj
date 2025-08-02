@@ -1,0 +1,343 @@
+@page "/api-projekt"
+
+<PageTitle>Selvvalgt API Projekt</PageTitle>
+
+<div class="api-projekt-container">
+    <div class="api-projekt-header">
+        <h1 class="api-projekt-title">
+            <i class="fas fa-plug"></i>
+            Selvvalgt API Projekt
+        </h1>
+        <p class="api-projekt-subtitle">Byg et kreativt projekt med et åbent API!</p>
+    </div>
+
+    <div class="content-section" style="border-left: 5px solid #ff9800; background: #fffbe7;">
+        <h2><i class="fas fa-exclamation-triangle"></i> Tip: Lav jeres egen Blazor-side!</h2>
+        <div class="explanation-card">
+            <p><strong>For at holde koden overskuelig og undgå forvirring, anbefaler vi, at I opretter en <u>ny Blazor-side</u> til jeres API-projekt i stedet for at bygge videre på denne side.</strong></p>
+            <ol>
+                <li>Højreklik på <code>Pages</code>-mappen i projektet og vælg <b>Add &rarr; Razor Component</b>.</li>
+                <li>Giv siden et sigende navn, fx <code>MitAPIProjekt.razor</code>.</li>
+                <li>Skriv jeres kode og UI på den nye side – så bliver det meget nemmere at holde styr på jeres projekt!</li>
+            </ol>
+            <hr />
+            <h4>Brug <code>APIService.cs</code> for clean code</h4>
+            <p>I projektet ligger der allerede en fil, der hedder <code>APIService.cs</code> under mappen <code>Services</code>.<br>
+            <b>Brug denne service til at hente data fra API'et!</b></p>
+            <ul>
+                <li>Renere kode (logik og UI adskilt)</li>
+                <li>Nem genbrug af API-kald</li>
+                <li>Bedre overblik og lettere fejlfinding</li>
+            </ul>
+            <b>Eksempel på brug:</b>
+            <pre><code>inject BlazorWASM.Services.APIService ApiService
+
+protected override async Task OnInitializedAsync()
+{
+    var status = await ApiService.GetBackendStatusAsync();
+    // Brug dataen i jeres UI
+}</code></pre>
+            <p style="margin-top:1em;"><b>Kort sagt:</b> Lav jeres eget Razor-component til projektet og brug <code>APIService.cs</code> til al API-logik – så får I et meget flottere og mere professionelt projekt!</p>
+        </div>
+    </div>
+
+    <div class="content-section">
+        <h2><i class="fas fa-hammer"></i> Sådan bygger I videre på dette projekt</h2>
+        <div class="explanation-card">
+            <ol>
+                <li>
+                    <strong>Brug dette projekt som udgangspunkt:</strong> I har allerede et Blazor-projekt fra GitHub Classroom. Alt arbejdet kan laves her – I skal ikke starte forfra!
+                </li>
+                <li>
+                    <strong>Find og åbn <code>YourAPIPage.razor</code>:</strong> Det er her, I kan eksperimentere med at hente og vise data fra et API.
+                </li>
+                <li>
+                    <strong>Udskift eksempel-API'et med jeres eget:</strong> Find følgende kode i filen:
+                    <div class="code-block">
+                        <pre><code>// TODO: Udskift med jeres eget API-endpoint og model!
+private List&lt;MyData&gt;? data;
+protected override async Task OnInitializedAsync()
+{
+    var http = new HttpClient();
+    data = await http.GetFromJsonAsync&lt;List&lt;MyData&gt;&gt;
+    ("https://api.example.com/data");
+}
+// Husk at lave en modelklasse der matcher API'et
+public class MyData
+{
+    public string? Name { get; set; }
+    // ...
+}
+</code></pre>
+                    </div>
+                    Udskift URL'en med jeres eget API, og lav en modelklasse der passer til de data, I får fra API'et.
+                </li>
+                <li>
+                    <strong>Vis data i brugerfladen:</strong> Brug fx følgende kode til at vise data:
+                    <div class="code-block">
+                        <pre><code>if (data == null)
+{
+    <p>Indlæser data...</p>
+}
+else
+{
+    <ul>
+        foreach (var item in data)
+        {
+            <li>&#64;item.Name</li>
+        }
+    </ul>
+}
+</code></pre>
+                    </div>
+                </li>
+                <li>
+                    <strong>Tilføj jeres egne idéer:</strong> Lav fx søgefunktion, flottere design eller kombiner flere API'er.
+                </li>
+                <li>
+                    <strong>Kommentér koden:</strong> Skriv kommentarer, så det er tydeligt, hvordan I henter og bruger data fra API'et.
+                </li>
+                <li>
+                    <strong>Upload og dokumentér:</strong> Når I er færdige, upload til GitHub og lav en README.md med beskrivelse af projekt og API.
+                </li>
+            </ol>
+            <p><em>Spørg underviseren, hvis I sidder fast – god fornøjelse! 🚀</em></p>
+        </div>
+    </div>
+
+    <div class="content-section">
+        <h2><i class="fas fa-lightbulb"></i> Introduktion</h2>
+        <div class="explanation-card">
+            <p>
+                Der findes et hav af gratis API'er med spændende data! I denne opgave skal I vælge en API, som I finder interessant, og bruge den til at bygge et simpelt projekt. Det kan være en quiz, et lille spil, en datavisualisering eller noget helt andet – det er kun fantasien, der sætter grænser!
+            </p>
+            <p>
+                <strong>Målet:</strong> Forstå hvordan man henter og bruger data fra et API samt vise det på en kreativ og brugervenlig måde.
+            </p>
+        </div>
+    </div>
+
+    <div class="content-section">
+        <h2><i class="fas fa-list-ol"></i> Opgavebeskrivelse</h2>
+        <ol>
+            <li>
+                <strong>Find en API:</strong>
+                <ul>
+                    <li><a href="https://opgaver.mercantec.tech/swagger/index.html" target="_blank">Mercantec-Opgaver-API</a> (<a href="https://blazor.mercantec.tech/Opgaver" target="_blank">eksempel</a>)</li>
+                    <li><a href="https://openweathermap.org/api" target="_blank">OpenWeatherMap</a></li>
+                    <li><a href="https://pokeapi.co/" target="_blank">PokeAPI</a></li>
+                    <li><a href="https://opentdb.com/api_config.php" target="_blank">Trivia API</a></li>
+                    <li><a href="https://api.nasa.gov/" target="_blank">NASA API</a></li>
+                    <li><a href="https://openlibrary.org/developers/api" target="_blank">OpenLibrary API</a></li>
+                </ul>
+                <em>Find flere på fx <a href="https://www.postman.com/explore" target="_blank">Postman Explore</a></em>
+            </li>
+            <li>
+                <strong>Planlæg jeres projekt:</strong>
+                <ul>
+                    <li>Hvad vil I bygge? (Quiz, spil, dashboard, visualisering, mv.)</li>
+                    <li>Hvordan skal data fra API'et bruges?</li>
+                    <li>Hvordan vil I præsentere det for brugeren?</li>
+                </ul>
+            </li>
+            <li>
+                <strong>Byg projektet:</strong>
+                <ul>
+                    <li>Opret en ny Blazor applikation</li>
+                    <li>Hent data fra API'et med en HTTP-request (fx GET)</li>
+                    <li>Brug dataen i jeres applikation</li>
+                </ul>
+            </li>
+            <li>
+                <strong>Præsentér jeres løsning:</strong>
+                <ul>
+                    <li>Projektet skal være funktionelt og brugervenligt</li>
+                    <li>Indsæt jeres egne forbedringer eller kreativitet</li>
+                    <li>Forbered en kort præsentation af API-valg, brug og læring</li>
+                </ul>
+            </li>
+        </ol>
+    </div>
+
+    <div class="content-section">
+        <h2><i class="fas fa-check-circle"></i> Krav til løsningen</h2>
+        <ul>
+            <li>Mindst én HTTP-request og håndtering af data i koden</li>
+            <li>UI der passer til jeres case og API</li>
+            <li>Kommentér koden, så integrationen forklares</li>
+            <li>Upload til GitHub med README.md (beskrivelse af projekt og API)</li>
+        </ul>
+    </div>
+
+    <div class="content-section">
+        <h2><i class="fas fa-bolt"></i> Ekstra udfordringer</h2>
+        <ul>
+            <li>Søgefunktionalitet for brugeren</li>
+            <li>Caching af data for færre API-kald</li>
+            <li>Kombinér data fra flere API'er</li>
+        </ul>
+    </div>
+
+    <div class="content-section">
+        <h2><i class="fas fa-rocket"></i> Kom godt i gang</h2>
+        <div class="explanation-card">
+            <p><strong>Eksempel på HTTP GET i Blazor:</strong></p>
+            <div class="code-block">
+                <pre><code>// TODO: Udskift med jeres eget API-endpoint og model!
+private List&lt;MyData&gt;? data;
+protected override async Task OnInitializedAsync()
+{
+    var http = new HttpClient();
+    data = await http.GetFromJsonAsync&lt;List&lt;MyData&gt;&gt;
+    ("https://api.example.com/data");
+}
+// Husk at lave en modelklasse der matcher API'et
+public class MyData
+{
+    public string? Name { get; set; }
+    // ...
+}
+</code></pre>
+            </div>
+            <p><strong>TODO:</strong> Udskift <code>MyData</code> og URL med jeres eget API og vis dataen i UI'et!</p>
+        </div>
+    </div>
+
+    <div class="content-section">
+        <h2><i class="fas fa-users"></i> Aflevering som gruppe</h2>
+        <ul>
+            <li>Fremlæggelse for klassen (5-7 min) <em>eller</em> videoaflevering (max 7 min)</li>
+            <li>Vis jeres API-valg, kodeeksempler og demo</li>
+            <li>Vær klar til at svare på spørgsmål</li>
+        </ul>
+    </div>
+
+    <div class="content-section info-box">
+        <h4><i class="fas fa-info-circle"></i> Formål med opgaven</h4>
+        <ul>
+            <li>Lære at finde, forstå og bruge API'er</li>
+            <li>Få erfaring med JSON-data og HTTP-requests</li>
+            <li>Udvikle kreative projekter med eksterne datakilder</li>
+            <li>Arbejde med struktureret kode og dokumentation</li>
+        </ul>
+    </div>
+</div>
+
+<style>
+    .api-projekt-container {
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 2rem;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    .api-projekt-header {
+        text-align: center;
+        margin-bottom: 2rem;
+        background: linear-gradient(135deg, #23b6e6 0%, #667eea 100%);
+        color: white;
+        padding: 2.5rem 2rem;
+        border-radius: 20px;
+        box-shadow: 0 10px 30px rgba(35, 182, 230, 0.1);
+    }
+    .api-projekt-title {
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin-bottom: 1rem;
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+    .api-projekt-title i {
+        margin-right: 1rem;
+        color: #ffd700;
+    }
+    .api-projekt-subtitle {
+        font-size: 1.2rem;
+        opacity: 0.95;
+        font-weight: 300;
+        margin: 0;
+    }
+    .content-section {
+        background: white;
+        border-radius: 15px;
+        padding: 1.5rem 2rem;
+        margin-bottom: 2rem;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.07);
+        border-left: 5px solid #23b6e6;
+    }
+    .content-section h2 {
+        color: #333;
+        margin-bottom: 1.2rem;
+        font-size: 1.3rem;
+    }
+    .content-section h2 i {
+        color: #23b6e6;
+        margin-right: 0.5rem;
+    }
+    .explanation-card {
+        background: #f8f9fa;
+        padding: 1.2rem;
+        border-radius: 10px;
+        margin-bottom: 1rem;
+    }
+    .code-block {
+        background: #2d3748;
+        color: #e2e8f0;
+        padding: 1.2rem;
+        border-radius: 10px;
+        overflow-x: auto;
+        margin-top: 1rem;
+        margin-bottom: 1rem;
+    }
+    .code-block code.language-csharp {
+        font-family: 'Fira Mono', 'Consolas', 'Courier New', monospace;
+        font-size: 1rem;
+        color: #e2e8f0;
+        background: none;
+        display: block;
+        white-space: pre;
+    }
+    .info-box {
+        background: #e3f2fd;
+        border-left: 4px solid #2196f3;
+        padding: 1.5rem;
+        border-radius: 8px;
+        margin-top: 2rem;
+    }
+    .info-box h4 {
+        color: #1976d2;
+        margin: 0 0 1rem 0;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    .info-box ul {
+        margin: 0;
+        padding-left: 1.5rem;
+    }
+    .info-box li {
+        margin-bottom: 0.5rem;
+        color: #0d47a1;
+    }
+    @@media (max-width: 768px) {
+        .api-projekt-container {
+            padding: 1rem;
+        }
+        .api-projekt-title {
+            font-size: 1.5rem;
+        }
+        .content-section {
+            padding: 1rem;
+        }
+    }
+</style>
+
+@code {
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await JS.InvokeVoidAsync("PrismHighlight");
+        }
+    }
+
+    [Inject] IJSRuntime JS { get; set; }
+}

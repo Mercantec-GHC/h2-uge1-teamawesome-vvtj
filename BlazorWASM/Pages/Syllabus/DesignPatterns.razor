@@ -1,0 +1,517 @@
+@page "/design-patterns"
+
+<PageTitle>Design Patterns - Genanvendelige OOP-løsninger</PageTitle>
+
+<div class="design-patterns-container">
+    <div class="header">
+        <div class="header-flex">
+            <img src="/assets/DesignPatterns.png" alt="Design Patterns Book" class="book-image" />
+            <div class="header-text">
+                <h1><i class="fas fa-cubes"></i> Design Patterns</h1>
+                <p class="subtitle">Elements of Reusable Object-Oriented Software</p>
+                <p>
+                    Design patterns er gennemprøvede løsninger på tilbagevendende problemer i softwareudvikling. De hjælper med at skrive mere fleksibel, genanvendelig og vedligeholdelsesvenlig kode.<br/>
+                    Her får du en introduktion til de mest brugte patterns fra GoF-bogen, med eksempler i C#. <br>
+                    Der er også en fysisk kopi i OLC'en - som man kan man læse i eller låne med hjem. 
+                </p>
+                <p>
+                    <a href="http://www.uml.org.cn/c++/pdf/DesignPatterns.pdf" target="_blank" class="book-link">
+                        Læs bogen "Design Patterns: Elements of Reusable Object-Oriented Software" (PDF)
+                    </a> 
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <div class="content-section">
+        <div class="categories-flex">
+            <div class="categories-text">
+                <h2>Kategorier af Design Patterns</h2>
+                <ul class="pattern-categories">
+                    <li><strong>Creational</strong> – Hvordan objekter oprettes <br>(fx Singleton, Factory, Builder, Prototype)</li><br>
+                    <li><strong>Structural</strong> – Hvordan objekter sammensættes <br>(fx Decorator, Adapter, Facade, Composite)</li><br>
+                    <li><strong>Behavioral</strong> – Hvordan objekter samarbejder og kommunikerer <br>(fx Observer, Strategy, Command, State)</li>
+                </ul>
+            </div>
+            <div class="pattern-relationships">
+                <img src="/assets/DesignPatternRelationships.png" alt="Design Pattern Relationships" class="relationships-image" />
+                <p class="relationships-caption">Illustration: Relationer mellem de klassiske design patterns fra GoF-bogen.</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="content-section">
+        <h2>Creational Patterns</h2>
+        <div class="patterns-grid">
+            <!-- Singleton -->
+            <div class="pattern-card">
+                <h3>Singleton</h3>
+                <p><strong>Problem:</strong> Du vil sikre, at der kun findes én instans af en klasse i hele applikationen.</p>
+                <p><strong>Brugssituation:</strong> Logger, konfigurationshåndtering, cache.</p>
+                <p><strong>Fordele:</strong> Kontrolleret adgang til en delt ressource.</p>
+                <p><strong>Ulemper:</strong> Kan gøre testning sværere og føre til skjulte afhængigheder.</p>
+                <pre><code class="language-csharp">public class Singleton
+{
+    private static Singleton _instance;
+    private static readonly object _lock = new object();
+    private Singleton() { }
+    public static Singleton Instance
+    {
+        get
+        {
+            lock(_lock)
+            {
+                if (_instance == null)
+                    _instance = new Singleton();
+                return _instance;
+            }
+        }
+    }
+}</code></pre>
+            </div>
+            <!-- Factory Method -->
+            <div class="pattern-card">
+                <h3>Factory Method</h3>
+                <p><strong>Problem:</strong> Du vil lade underklasser bestemme, hvilken type objekt der skal oprettes.</p>
+                <p><strong>Brugssituation:</strong> Når du har brug for fleksibilitet i oprettelsen af objekter, fx GUI-elementer.</p>
+                <p><strong>Fordele:</strong> Løs kobling mellem klient og konkrete klasser.</p>
+                <p><strong>Ulemper:</strong> Kan føre til mange klasser i store systemer.</p>
+                <pre><code class="language-csharp">public abstract class Animal
+{
+    public abstract string Speak();
+}
+public class Dog : Animal
+{
+    public override string Speak() => "Vuf!";
+}
+public class Cat : Animal
+{
+    public override string Speak() => "Miau!";
+}
+public class AnimalFactory
+{
+    public static Animal Create(string type)
+    {
+        return type switch
+        {
+            "dog" => new Dog(),
+            "cat" => new Cat(),
+            _ => null
+        };
+    }
+}</code></pre>
+            </div>
+            <!-- Builder -->
+            <div class="pattern-card">
+                <h3>Builder</h3>
+                <p><strong>Problem:</strong> Du vil bygge komplekse objekter trin for trin.</p>
+                <p><strong>Brugssituation:</strong> Oprettelse af objekter med mange valgfri parametre, fx HTML, madvarer, dokumenter.</p>
+                <p><strong>Fordele:</strong> Gør det nemt at skabe forskellige varianter af et objekt.</p>
+                <p><strong>Ulemper:</strong> Kan være overkill for simple objekter.</p>
+                <p><em>Eksempel fra virkeligheden:</em> 
+                I moderne C#-projekter bruges builder-mønsteret i <code>Program.cs</code> til at konfigurere og bygge applikationen, fx 
+                <br><code>var builder = WebApplication.CreateBuilder(args);</code> 
+                <br>efterfulgt af 
+                <br><code>builder.Services.AddControllers()</code> 
+                <br>og til sidst 
+                <br><code>var app = builder.Build();</code>.</p>
+                <pre><code class="language-csharp">public class Burger
+{
+    public string Bun { get; set; }
+    public string Patty { get; set; }
+    public bool Cheese { get; set; }
+}
+public class BurgerBuilder
+{
+    private Burger burger = new Burger();
+    public BurgerBuilder AddBun(string bun) { burger.Bun = bun; return this; }
+    public BurgerBuilder AddPatty(string patty) { burger.Patty = patty; return this; }
+    public BurgerBuilder WithCheese() { burger.Cheese = true; return this; }
+    public Burger Build() => burger;
+}</code></pre>
+            </div>
+        </div>
+    </div>
+
+    <div class="content-section">
+        <h2>Structural Patterns</h2>
+        <div class="patterns-grid">
+            <!-- Decorator -->
+            <div class="pattern-card">
+                <h3>Decorator</h3>
+                <p><strong>Problem:</strong> Du vil tilføje funktionalitet til objekter uden at ændre deres klasse.</p>
+                <p><strong>Brugssituation:</strong> UI-komponenter, streams, når du vil kunne kombinere flere "features" dynamisk.</p>
+                <p><strong>Fordele:</strong> Fleksibel udvidelse af funktionalitet.</p>
+                <p><strong>Ulemper:</strong> Kan føre til mange små klasser.</p>
+                <pre><code class="language-csharp">public interface ICoffee { string GetDescription(); }
+public class SimpleCoffee : ICoffee
+{
+    public string GetDescription() => "Kaffe";
+}
+public class MilkDecorator : ICoffee
+{
+    private ICoffee coffee;
+    public MilkDecorator(ICoffee c) { coffee = c; }
+    public string GetDescription() => coffee.GetDescription() + ", mælk";
+}</code></pre>
+            </div>
+            <!-- Adapter -->
+            <div class="pattern-card">
+                <h3>Adapter</h3>
+                <p><strong>Problem:</strong> Du har to klasser med inkompatible interfaces, der skal arbejde sammen.</p>
+                <p><strong>Brugssituation:</strong> Integration af tredjepartsbiblioteker, hvor du ikke kan ændre koden.</p>
+                <p><strong>Fordele:</strong> Gør det muligt at genbruge eksisterende kode.</p>
+                <p><strong>Ulemper:</strong> Kan tilføje et ekstra lag af kompleksitet.</p>
+                <pre><code class="language-csharp">public interface ITarget { string GetRequest(); }
+public class Adaptee { public string GetSpecificRequest() => "Specifik forespørgsel"; }
+public class Adapter : ITarget
+{
+    private Adaptee _adaptee;
+    public Adapter(Adaptee adaptee) { _adaptee = adaptee; }
+    public string GetRequest() => _adaptee.GetSpecificRequest();
+}</code></pre>
+            </div>
+            <!-- Facade -->
+            <div class="pattern-card">
+                <h3>Facade</h3>
+                <p><strong>Problem:</strong> Du vil forenkle et komplekst system med mange klasser.</p>
+                <p><strong>Brugssituation:</strong> Når du vil give et enkelt API til et bibliotek eller subsystem.</p>
+                <p><strong>Fordele:</strong> Gør systemet lettere at bruge for klienten.</p>
+                <p><strong>Ulemper:</strong> Kan skjule vigtig funktionalitet fra brugeren.</p>
+                <pre><code class="language-csharp">public class SubsystemA { public void DoA() { } }
+public class SubsystemB { public void DoB() { } }
+public class Facade
+{
+    private SubsystemA a = new();
+    private SubsystemB b = new();
+    public void DoEverything() { a.DoA(); b.DoB(); }
+}</code></pre>
+            </div>
+        </div>
+    </div>
+
+    <div class="content-section">
+        <h2>Behavioral Patterns</h2>
+        <div class="patterns-grid">
+            <!-- Observer -->
+            <div class="pattern-card">
+                <h3>Observer</h3>
+                <p><strong>Problem:</strong> Flere objekter skal opdateres automatisk, når et andet objekt ændrer sig.</p>
+                <p><strong>Brugssituation:</strong> GUI-events, data-binding, notifikationssystemer.</p>
+                <p><strong>Fordele:</strong> Løs kobling mellem subject og observers.</p>
+                <p><strong>Ulemper:</strong> Kan føre til uforudsigelig opdateringsrækkefølge.</p>
+                <pre><code class="language-csharp">public interface IObserver { void Update(); }
+public class Subject
+{
+    private List&lt;IObserver&gt; observers = new();
+    public void Attach(IObserver o) => observers.Add(o);
+    public void Notify() { foreach(var o in observers) o.Update(); }
+}</code></pre>
+            </div>
+            <!-- Strategy -->
+            <div class="pattern-card">
+                <h3>Strategy</h3>
+                <p><strong>Problem:</strong> Du vil kunne skifte algoritme eller adfærd dynamisk.</p>
+                <p><strong>Brugssituation:</strong> Sortering, validering, komprimering, hvor flere algoritmer kan vælges.</p>
+                <p><strong>Fordele:</strong> Gør det let at udskifte og udvide algoritmer.</p>
+                <p><strong>Ulemper:</strong> Klienten skal kende til de forskellige strategier.</p>
+                <pre><code class="language-csharp">public interface ISortStrategy { void Sort(List&lt;int&gt; list); }
+public class BubbleSort : ISortStrategy
+{
+    public void Sort(List&lt;int&gt; list) { /* ... */ }
+}
+public class QuickSort : ISortStrategy
+{
+    public void Sort(List&lt;int&gt; list) { /* ... */ }
+}
+public class Sorter
+{
+    public ISortStrategy Strategy { get; set; }
+    public void Sort(List&lt;int&gt; list) => Strategy.Sort(list);
+}</code></pre>
+            </div>
+            <!-- Command -->
+            <div class="pattern-card">
+                <h3>Command</h3>
+                <p><strong>Problem:</strong> Du vil indkapsle en handling som et objekt, så du kan gemme, logge eller fortryde den.</p>
+                <p><strong>Brugssituation:</strong> GUI-knapper, undo/redo, makrooptagelse.</p>
+                <p><strong>Fordele:</strong> Understøtter undo/redo og logning af handlinger.</p>
+                <p><strong>Ulemper:</strong> Kan føre til mange små kommando-klasser.</p>
+                <pre><code class="language-csharp">public interface ICommand { void Execute(); }
+public class LightOnCommand : ICommand
+{
+    public void Execute() { /* Tænd lys */ }
+}
+public class RemoteControl
+{
+    public void Submit(ICommand command) { command.Execute(); }
+}</code></pre>
+            </div>
+            <!-- State -->
+            <div class="pattern-card">
+                <h3>State</h3>
+                <p><strong>Problem:</strong> Et objekts adfærd skal ændre sig, når dets interne tilstand ændres.</p>
+                <p><strong>Brugssituation:</strong> Spilfigurer, UI-komponenter, hvor adfærd afhænger af tilstand.</p>
+                <p><strong>Fordele:</strong> Gør tilstandsafhængig logik mere overskuelig.</p>
+                <p><strong>Ulemper:</strong> Kan føre til mange tilstandsklasser.</p>
+                <pre><code class="language-csharp">public interface IState { void Handle(); }
+public class HappyState : IState { public void Handle() { /* ... */ } }
+public class SadState : IState { public void Handle() { /* ... */ } }
+public class Context
+{
+    public IState State { get; set; }
+    public void Request() => State.Handle();
+}</code></pre>
+            </div>
+        </div>
+    </div>
+
+    <div class="content-section">
+        <h2>Hvorfor bruge design patterns?</h2>
+        <ul>
+            <li>Gør koden mere forståelig og genanvendelig</li>
+            <li>Forbedrer samarbejde i teams (fælles sprog)</li>
+            <li>Hjælper med at undgå typiske fejl og anti-patterns</li>
+        </ul>
+    </div>
+</div>
+
+<style>
+.design-patterns-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+.header {
+    text-align: center;
+    margin-bottom: 2.5rem;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 2.5rem 2rem 2rem 2rem;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(102, 126, 234, 0.1);
+}
+.header-flex {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 2.5rem;
+}
+.book-image {
+    max-width: 220px;
+    width: 100%;
+    margin-bottom: 0;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+}
+.header-text {
+    flex: 1;
+    min-width: 220px;
+    text-align: left;
+}
+.book-link {
+    display: inline-block;
+    margin-top: 1rem;
+    background: #fff;
+    color: #764ba2;
+    font-weight: bold;
+    padding: 0.5rem 1.2rem;
+    border-radius: 20px;
+    text-decoration: none;
+    box-shadow: 0 2px 8px rgba(102, 126, 234, 0.07);
+    transition: background 0.2s, color 0.2s;
+}
+.book-link:hover {
+    background: #764ba2;
+    color: #fff;
+}
+.header h1 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+}
+.header .subtitle {
+    font-size: 1.2rem;
+    opacity: 0.9;
+    font-weight: 300;
+    margin-bottom: 1rem;
+}
+.content-section {
+    background: white;
+    border-radius: 15px;
+    padding: 2rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.07);
+    border-left: 5px solid #667eea;
+}
+.pattern-categories {
+    font-size: 1.5rem;
+    line-height: 1.7;
+    margin-bottom: 0;
+}
+.patterns-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+    margin-top: 1.5rem;
+}
+.pattern-card {
+    background: #f8f9fa;
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: 0 2px 8px rgba(102, 126, 234, 0.07);
+    border-left: 4px solid #764ba2;
+}
+.pattern-card h3 {
+    margin-top: 0;
+    margin-bottom: 0.5rem;
+    font-size: 1.3rem;
+}
+.pattern-card .category {
+    font-size: 0.9rem;
+    color: #667eea;
+    font-weight: 400;
+}
+.pattern-card pre {
+    background: #2d3748;
+    color: #e2e8f0;
+    padding: 1rem;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    overflow-x: auto;
+    margin-top: 1rem;
+}
+.pattern-card code.language-csharp {
+    font-family: 'Fira Mono', 'Consolas', 'Courier New', monospace;
+    color: #e2e8f0;
+    background: none;
+    display: block;
+    white-space: pre;
+}
+@@media (max-width: 768px) {
+    .design-patterns-container {
+        padding: 1rem;
+    }
+    .header-flex {
+        flex-direction: column;
+        gap: 1.2rem;
+        align-items: center;
+        text-align: center;
+    }
+    .header-text {
+        text-align: center;
+    }
+    .header h1 {
+        font-size: 1.5rem;
+    }
+    .patterns-grid {
+        grid-template-columns: 1fr;
+    }
+}
+.pattern-relationships {
+    margin: 2rem 0 1rem 0;
+    text-align: center;
+}
+.relationships-image {
+    max-width: 100%;
+    min-width: 180px;
+    max-height: 520px;
+    height: auto;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.10);
+    margin-bottom: 0.5rem;
+}
+.relationships-caption {
+    font-size: 1.08rem;
+    color: #555;
+    margin-bottom: 0;
+}
+.categories-flex {
+    display: flex;
+    align-items: flex-start;
+    gap: 4rem;
+    justify-content: center;
+    max-width: 1400px;
+    margin: 0 auto 2.5rem auto;
+    padding: 2rem 0;
+}
+.categories-text {
+    flex: 1;
+    min-width: 220px;
+    font-size: 1.25rem;
+    line-height: 1.7;
+    padding-right: 1.5rem;
+    max-width: 600px;
+}
+.pattern-relationships {
+    flex: 1.2;
+    min-width: 320px;
+    max-width: 900px;
+    text-align: center;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+}
+.relationships-image {
+    max-width: 100%;
+    min-width: 320px;
+    max-height: 700px;
+    height: auto;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.10);
+    margin-bottom: 0.5rem;
+}
+.relationships-caption {
+    font-size: 1.08rem;
+    color: #555;
+    margin-bottom: 0;
+}
+@@media (max-width: 1200px) {
+    .pattern-relationships {
+        min-width: 220px;
+        max-width: 100%;
+    }
+    .relationships-image {
+        min-width: 180px;
+        max-height: 400px;
+    }
+}
+@@media (max-width: 900px) {
+    .categories-flex {
+        flex-direction: column;
+        gap: 2rem;
+        align-items: center;
+    }
+    .categories-text {
+        text-align: center;
+        font-size: 1.1rem;
+        padding-right: 0;
+        max-width: 100%;
+    }
+    .pattern-relationships {
+        max-width: 100%;
+        min-width: 0;
+    }
+    .relationships-image {
+        min-width: 0;
+        max-height: 420px;
+    }
+}
+</style>
+
+
+@code
+{
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await JS.InvokeVoidAsync("PrismHighlight");
+        }
+    }
+
+    [Inject] IJSRuntime JS { get; set; }
+}

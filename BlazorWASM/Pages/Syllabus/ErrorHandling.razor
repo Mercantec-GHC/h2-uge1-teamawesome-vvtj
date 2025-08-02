@@ -1,0 +1,512 @@
+@page "/error-handling"
+
+<PageTitle>Error Handling i C# - H2 Studieplan</PageTitle>
+
+<div class="error-handling-container">
+    <div class="error-header">
+        <h1 class="error-title">
+            <i class="fas fa-exclamation-triangle"></i>
+            Error Handling i C#
+        </h1>
+        <p class="error-subtitle">Håndtering af fejl i API-kommunikation og serverresponser</p>
+    </div>
+
+    <!-- Grundlæggende Error Handling -->
+    <div class="content-section">
+        <h2><i class="fas fa-shield-alt"></i> Grundlæggende Error Handling</h2>
+        <div class="explanation-card">
+            <p>
+                Fejlhåndtering er kritisk i moderne applikationer, især når vi arbejder med API'er og netværkskommunikation.
+                C# giver os flere værktøjer til at håndtere fejl på en elegant måde.
+            </p>
+            
+            <div class="methods-grid">
+                <div class="method-card get">
+                    <h4>Try-Catch Blok</h4>
+                    <pre><code class="language-csharp">try
+{
+    // Kode der kan kaste en exception
+    var response = await httpClient.GetAsync("api/data");
+    response.EnsureSuccessStatusCode();
+}
+catch (HttpRequestException ex)
+{
+    // Håndter netværksfejl
+    Console.WriteLine($"Netværksfejl: {ex.Message}");
+}
+catch (Exception ex)
+{
+    // Håndter andre fejl
+    Console.WriteLine($"Generel fejl: {ex.Message}");
+}</code></pre>
+                    <div class="explanation-text">
+                        <p>Try-catch blokken er grundlæggende i C# fejlhåndtering:</p>
+                        <ul>
+                            <li>Kør risikabel kode i try-blokken</li>
+                            <li>Fang specifikke exceptions først</li>
+                            <li>Brug generel Exception som sidste resort</li>
+                            <li>Log fejl og giv brugervenlige beskeder</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="method-card post">
+                    <h4>Custom Exceptions</h4>
+                    <pre><code class="language-csharp">public class ApiException : Exception
+{
+    public int StatusCode { get; }
+    public string Response { get; }
+
+    public ApiException(int statusCode, string response)
+        : base($"API fejl: {statusCode}")
+    {
+        StatusCode = statusCode;
+        Response = response;
+    }
+}</code></pre>
+                    <div class="explanation-text">
+                        <p>Custom exceptions giver mere kontrol over fejlhåndtering:</p>
+                        <ul>
+                            <li>Lav specifikke fejltyper for din applikation</li>
+                            <li>Inkluder relevant information i fejlen</li>
+                            <li>Gør det nemmere at håndtere specifikke fejltyper</li>
+                            <li>Forbedrer kode-læsbarhed og vedligeholdelse</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- API Error Handling -->
+    <div class="content-section">
+        <h2><i class="fas fa-exchange-alt"></i> API Error Handling</h2>
+        <div class="explanation-card">
+            <p>
+                Når vi arbejder med API'er, er det vigtigt at håndtere både netværksfejl og serverresponser korrekt.
+            </p>
+
+            <div class="code-block">
+                <h4>Komplet API Error Handling Eksempel</h4>
+                <pre><code class="language-csharp">public async Task&lt;ApiResponse&lt;T&gt;&gt; GetDataAsync&lt;T&gt;(string endpoint)
+{
+    try
+    {
+        var response = await _httpClient.GetAsync(endpoint);
+        var content = await response.Content.ReadAsStringAsync();
+
+        if (response.IsSuccessStatusCode)
+        {
+            var data = JsonSerializer.Deserialize&lt;T&gt;(content);
+            return new ApiResponse&lt;T&gt; { Data = data, Success = true };
+        }
+        else
+        {
+            var error = JsonSerializer.Deserialize&lt;ApiError&gt;(content);
+            return new ApiResponse&lt;T&gt; 
+            { 
+                Success = false, 
+                Error = error?.Message ?? "Ukendt fejl",
+                StatusCode = response.StatusCode
+            };
+        }
+    }
+    catch (HttpRequestException ex)
+    {
+        return new ApiResponse&lt;T&gt; 
+        { 
+            Success = false, 
+            Error = "Netværksfejl: " + ex.Message,
+            StatusCode = HttpStatusCode.ServiceUnavailable
+        };
+    }
+    catch (JsonException ex)
+    {
+        return new ApiResponse&lt;T&gt; 
+        { 
+            Success = false, 
+            Error = "Fejl i data format: " + ex.Message,
+            StatusCode = HttpStatusCode.BadRequest
+        };
+    }
+}</code></pre>
+            </div>
+
+            <div class="info-box">
+                <h4><i class="fas fa-info-circle"></i> Vigtige Punkter i API Error Handling</h4>
+                <ul>
+                    <li>Håndter både succesfulde og fejlede API kald</li>
+                    <li>Parse serverens fejlbeskeder korrekt</li>
+                    <li>Giv brugervenlige fejlbeskeder</li>
+                    <li>Log fejl for debugging</li>
+                    <li>Implementer retry-logik for midlertidige fejl</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Server Error Responses -->
+    <div class="content-section">
+        <h2><i class="fas fa-server"></i> Server Error Responses</h2>
+        <div class="explanation-card">
+            <p>
+                Serveren kan sende forskellige typer fejlresponser. Det er vigtigt at kunne håndtere disse korrekt.
+            </p>
+
+            <div class="error-types-grid">
+                <div class="error-type-card">
+                    <h4><i class="fas fa-exclamation-circle"></i> 4xx - Client Errors</h4>
+                    <ul>
+                        <li><strong>400 Bad Request</strong> - Forkert formateret request</li>
+                        <li><strong>401 Unauthorized</strong> - Manglende authentication</li>
+                        <li><strong>403 Forbidden</strong> - Ingen adgang til ressourcen</li>
+                        <li><strong>404 Not Found</strong> - Ressourcen findes ikke</li>
+                        <li><strong>429 Too Many Requests</strong> - Rate limiting</li>
+                    </ul>
+                </div>
+
+                <div class="error-type-card">
+                    <h4><i class="fas fa-bug"></i> 5xx - Server Errors</h4>
+                    <ul>
+                        <li><strong>500 Internal Server Error</strong> - Generel serverfejl</li>
+                        <li><strong>502 Bad Gateway</strong> - Proxy/server kommunikationsfejl</li>
+                        <li><strong>503 Service Unavailable</strong> - Server er midlertidigt nede</li>
+                        <li><strong>504 Gateway Timeout</strong> - Server timeout</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="code-block">
+                <h4>Håndtering af Server Errors</h4>
+                <pre><code class="language-csharp">public async Task HandleApiErrorAsync(HttpResponseMessage response)
+{
+    var content = await response.Content.ReadAsStringAsync();
+    
+    switch (response.StatusCode)
+    {
+        case HttpStatusCode.BadRequest:
+            throw new ApiException(400, "Ugyldig forespørgsel: " + content);
+            
+        case HttpStatusCode.Unauthorized:
+            throw new ApiException(401, "Du skal være logget ind");
+            
+        case HttpStatusCode.Forbidden:
+            throw new ApiException(403, "Du har ikke adgang til denne ressource");
+            
+        case HttpStatusCode.NotFound:
+            throw new ApiException(404, "Ressourcen blev ikke fundet");
+            
+        case HttpStatusCode.TooManyRequests:
+            throw new ApiException(429, "For mange forespørgsler. Prøv igen senere");
+            
+        case HttpStatusCode.InternalServerError:
+            throw new ApiException(500, "Server fejl: " + content);
+            
+        default:
+            throw new ApiException((int)response.StatusCode, 
+                $"Uventet fejl: {response.StatusCode} - {content}");
+    }
+}</code></pre>
+            </div>
+        </div>
+    </div>
+
+    <!-- Best Practices -->
+    <div class="content-section">
+        <h2><i class="fas fa-check-circle"></i> Best Practices</h2>
+        <div class="explanation-card">
+            <div class="best-practices-grid">
+                <div class="practice-card">
+                    <h4><i class="fas fa-user-shield"></i> Brugervenlighed</h4>
+                    <ul>
+                        <li>Giv klare, forståelige fejlbeskeder</li>
+                        <li>Undgå tekniske detaljer i brugerbeskeder</li>
+                        <li>Foreslå løsninger når det er muligt</li>
+                        <li>Vis fejl på en pæn måde i UI'en</li>
+                    </ul>
+                </div>
+
+                <div class="practice-card">
+                    <h4><i class="fas fa-code"></i> Kode Kvalitet</h4>
+                    <ul>
+                        <li>Brug specifikke exception typer</li>
+                        <li>Implementer logging af fejl</li>
+                        <li>Undgå at fange Exception generelt</li>
+                        <li>Ryd op efter fejl (dispose resources)</li>
+                    </ul>
+                </div>
+
+                <div class="practice-card">
+                    <h4><i class="fas fa-sync"></i> Retry Logik</h4>
+                    <ul>
+                        <li>Implementer retry for midlertidige fejl</li>
+                        <li>Brug exponential backoff</li>
+                        <li>Begræns antal retry forsøg</li>
+                        <li>Håndter timeout korrekt</li>
+                    </ul>
+                </div>
+
+                <div class="practice-card">
+                    <h4><i class="fas fa-shield-alt"></i> Sikkerhed</h4>
+                    <ul>
+                        <li>Log ikke følsomme data</li>
+                        <li>Valider input grundigt</li>
+                        <li>Håndter authentication fejl sikkert</li>
+                        <li>Implementer rate limiting</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .error-handling-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 2rem;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    .error-header {
+        text-align: center;
+        margin-bottom: 3rem;
+        background: linear-gradient(135deg, #ff6b6b 0%, #ff8e8e 100%);
+        color: white;
+        padding: 3rem 2rem;
+        border-radius: 20px;
+        box-shadow: 0 20px 40px rgba(255, 107, 107, 0.1);
+    }
+
+    .error-title {
+        font-size: 3rem;
+        font-weight: 700;
+        margin-bottom: 1rem;
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .error-title i {
+        margin-right: 1rem;
+        color: #ffd700;
+    }
+
+    .error-subtitle {
+        font-size: 1.3rem;
+        opacity: 0.9;
+        font-weight: 300;
+        margin: 0;
+    }
+
+    .content-section {
+        background: white;
+        border-radius: 15px;
+        padding: 2rem;
+        margin-bottom: 2rem;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        border-left: 5px solid #ff6b6b;
+    }
+
+    .content-section h2 {
+        color: #333;
+        margin-bottom: 1.5rem;
+        font-size: 1.8rem;
+    }
+
+    .content-section h2 i {
+        color: #ff6b6b;
+        margin-right: 0.5rem;
+    }
+
+    .explanation-card {
+        background: #f8f9fa;
+        padding: 2rem;
+        border-radius: 12px;
+        margin-bottom: 1rem;
+    }
+
+    .methods-grid {
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+        margin-top: 1.5rem;
+    }
+
+    .method-card {
+        border-radius: 12px;
+        padding: 1.5rem;
+        border-left: 4px solid;
+        transition: transform 0.3s ease;
+        background: #f8f9fa;
+    }
+
+    .method-card.get { border-left-color: #28a745; }
+    .method-card.post { border-left-color: #007bff; }
+
+    .method-card h4 {
+        color: #ff6b6b;
+        margin-top: 0;
+        margin-bottom: 1rem;
+    }
+
+    .code-block {
+        background: #2d3748;
+        color: #e2e8f0;
+        padding: 2rem;
+        border-radius: 12px;
+        overflow-x: auto;
+        margin-top: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .code-block h4 {
+        color: #ffd700;
+        margin-top: 0;
+        margin-bottom: 1rem;
+    }
+
+    .code-block code.language-csharp {
+        font-family: 'Fira Mono', 'Consolas', 'Courier New', monospace;
+        font-size: 1rem;
+        color: #e2e8f0;
+        background: none;
+        display: block;
+        white-space: pre;
+    }
+
+    .explanation-text {
+        margin-top: 1rem;
+        padding: 1rem;
+        background: #f0f4f8;
+        border-radius: 8px;
+        font-size: 0.95rem;
+    }
+
+    .explanation-text ul {
+        margin: 0.5rem 0;
+        padding-left: 1.5rem;
+    }
+
+    .explanation-text li {
+        margin-bottom: 0.5rem;
+    }
+
+    .info-box {
+        background: #e3f2fd;
+        border-left: 4px solid #2196f3;
+        padding: 1.5rem;
+        border-radius: 8px;
+        margin-top: 2rem;
+    }
+
+    .info-box h4 {
+        color: #1976d2;
+        margin: 0 0 1rem 0;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .info-box ul {
+        margin: 0;
+        padding-left: 1.5rem;
+    }
+
+    .info-box li {
+        margin-bottom: 0.5rem;
+        color: #0d47a1;
+    }
+
+    .error-types-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 1.5rem;
+        margin-top: 1.5rem;
+    }
+
+    .error-type-card {
+        background: #f8f9fa;
+        padding: 1.5rem;
+        border-radius: 12px;
+        border-left: 4px solid #ff6b6b;
+    }
+
+    .error-type-card h4 {
+        color: #333;
+        margin-top: 0;
+        margin-bottom: 1rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .error-type-card ul {
+        margin: 0;
+        padding-left: 1.5rem;
+    }
+
+    .error-type-card li {
+        margin-bottom: 0.5rem;
+        color: #666;
+    }
+
+    .best-practices-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1.5rem;
+        margin-top: 1.5rem;
+    }
+
+    .practice-card {
+        background: #f8f9fa;
+        padding: 1.5rem;
+        border-radius: 12px;
+        border-top: 4px solid #ff6b6b;
+    }
+
+    .practice-card h4 {
+        color: #333;
+        margin-top: 0;
+        margin-bottom: 1rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .practice-card ul {
+        margin: 0;
+        padding-left: 1.5rem;
+    }
+
+    .practice-card li {
+        margin-bottom: 0.5rem;
+        color: #666;
+    }
+
+    @@media (max-width: 768px) {
+        .error-handling-container {
+            padding: 1rem;
+        }
+
+        .error-title {
+            font-size: 2rem;
+        }
+
+        .methods-grid,
+        .error-types-grid,
+        .best-practices-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+
+@code {
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await JS.InvokeVoidAsync("PrismHighlight");
+        }
+    }
+
+    [Inject] IJSRuntime JS { get; set; }
+}
