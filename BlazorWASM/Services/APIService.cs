@@ -1,11 +1,13 @@
 using System.Text.Json;
+using BlazorWASM.Pages;
+
 
 namespace BlazorWASM.Services
 {
     public class APIService
     {
         private readonly HttpClient _httpClient;
-        private const string BaseUrl = "https://opgaver.mercantec.tech/api";
+        private const string BaseUrl = "https://opgaver.mercantec.tech";
 
         public APIService(HttpClient httpClient)
         {
@@ -16,7 +18,7 @@ namespace BlazorWASM.Services
         {
             try
             {
-                var response = await _httpClient.GetAsync($"{BaseUrl}/Status/all");
+                var response = await _httpClient.GetAsync($"{BaseUrl}/api/Status/all");
 
                 if (response.IsSuccessStatusCode)
                 {
@@ -33,7 +35,31 @@ namespace BlazorWASM.Services
                 return null;
             }
         }
+
+        public async Task<List<BenzinClass>> GetOpgavesAsync()
+        {
+            try
+            {
+                var response = await _httpClient.GetAsync($"{BaseUrl}/Opgaver/diesel");
+                if (response.IsSuccessStatusCode)
+                {
+                    var json = await response.Content.ReadAsStringAsync();
+                    return JsonSerializer.Deserialize<List<BenzinClass>>(json);
+                }
+                else
+                {
+                    Console.WriteLine($"Fejl: {response.StatusCode}");
+                    return new List<BenzinClass>();
+                }
+            }
+            catch (HttpRequestException ex)
+            {
+                Console.WriteLine($"Netværksfejl: {ex.Message}");
+                return new List<BenzinClass>();
+            }
+        }
     }
+
 
     public class BackendStatus
     {
@@ -54,5 +80,10 @@ namespace BlazorWASM.Services
         public string? Database { get; set; }
         public string? Error { get; set; }
         public bool IsError { get; set; }
+    }
+    
+    public class BenzinClass{
+        public string? Price;
+        public string? Date;
     }
 }

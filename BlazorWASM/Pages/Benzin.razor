@@ -1,0 +1,30 @@
+
+@page "/Benzin"
+@inject BlazorWASM.Services.APIService APIService
+@using BlazorWASM.Services
+
+<h1>Benzin</h1>
+
+<table>
+    @if (listAfBenzin == null)
+    {
+        <td>Indlæser...</td>
+    }
+    else
+    {
+        @foreach (var benzin in listAfBenzin)
+        {
+            <td>@benzin.Price</td>
+        }
+    }
+
+</table>
+
+@code{
+    public List<BenzinClass> listAfBenzin = new List<BenzinClass>();
+    protected override async Task OnInitializedAsync(){
+
+        listAfBenzin = await APIService.GetOpgavesAsync();
+        Console.WriteLine(listAfBenzin[0].Price);
+    }
+}
