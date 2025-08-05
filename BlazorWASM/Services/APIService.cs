@@ -36,7 +36,7 @@ namespace BlazorWASM.Services
             }
         }
 
-		public async Task<List<GasPrice>?> GetPricesAsync()
+		public async Task<List<GasPrice>?> GetGasPricesAsync()
 		{
 			try
 			{
@@ -60,9 +60,46 @@ namespace BlazorWASM.Services
 				return null;
 			}
 		}
+
+		public async Task<List<DieselPrice>?> GetDieselPricesAsync()
+		{
+			try
+			{
+				var response = await _httpClient.GetAsync($"{BaseUrl}Opgaver/Diesel");
+
+				if (response.IsSuccessStatusCode)
+				{
+					var jsonString = await response.Content.ReadAsStringAsync();
+					return JsonSerializer.Deserialize<List<DieselPrice>?>(jsonString);
+				}
+
+				else
+				{
+					Console.WriteLine($"Error: {response.StatusCode}");
+					return new List<DieselPrice>();
+				}
+			}
+			catch (Exception ex)
+			{
+				Console.WriteLine($"Error: {ex}");
+				return null;
+			}
+		}
 	}
 
-    public class BackendStatus
+	public class GasPrice
+	{
+		public string? Date { get; set; }
+		public string? Price { get; set; }
+	}
+
+	public class DieselPrice
+	{
+		public string? Date { get; set; }
+		public string? Price { get; set; }
+	}
+
+	public class BackendStatus
     {
         public ServerStatus? Server { get; set; }
         public DatabaseStatus? MongoDB { get; set; }

@@ -1,48 +1,90 @@
 ﻿@page "/test"
+@using BlazorBootstrap
 @inject BlazorWASM.Services.APIService APIService
 
-<h3>My API Project</h3>
 
-<table class="table caption-top">
-	<caption>Prices for Gas</caption>
-	<thead>
-		<tr>
-			<th scope="col">#</th>
-			<th scope="col">Date</th>
-			<th scope="col">Price</th>
-		</tr>
-	</thead>
-	<tbody>
-		@for (int i = 0; i < Prices.Count; i++)
-		{
-			<tr>
-				<th scope="row">@{ var rowNumber = i + 1; } @rowNumber</th>
-				<td>@Prices[i].Date</td>
-				<td>@Prices[i].Price</td>
-			</tr>
-		}
-	</tbody>
-</table>
+<LineChart @ref="lineChart" Height="800" Width="1200" />
+
 
 @code {
-	public class GasPrice
-	{
-		public string? Date { get; set; }
-		public string? Price { get; set; }
-	}
 
-	public List<GasPrice> Prices = new();
+	public List<GasPrice> GasPrices = new();
+	public List<DieselPrice> DieselPrices = new();
+
+	private LineChart lineChart = default!;
+	private LineChartOptions lineChartOptions = default!;
+	private ChartData chartData = default!;
 
 	protected override async Task OnInitializedAsync()
 	{
-		var prices = await APIService.GetPricesAsync();
-		if (prices != null)
+		try
 		{
-			Prices = prices;
+			GasPrices = await APIService.GetGasPricesAsync() ?? new List<GasPrice>();
+			DieselPrices = await APIService.GetDieselPricesAsync() ?? new List<DieselPrice>();
+
+			GetDataChart();
+		}
+		catch (Exception ex)
+		{
+			Console.WriteLine($"Error fetching prices: {ex.Message}");
+		}
+
+	}
+	protected override async Task OnAfterRenderAsync(bool firstRender)
+	{
+		if (chartData != null && lineChartOptions != null)
+		{
+			await lineChart.InitializeAsync(chartData, lineChartOptions);
 		}
 		else
 		{
-			Console.WriteLine("Not Found");
+			Console.WriteLine("Chart data or options not initialized.");
 		}
+		await base.OnAfterRenderAsync(firstRender);
+	}
+
+	public void GetDataChart()
+	{
+		var colors = ColorUtility.CategoricalTwelveColors;
+        var labels = GasPrices
+        .Where(gp => string.Compare(gp.Date, "2020") >= 0)
+        .Select(gp => gp.Date)
+        .ToList();
+		var datasets = new List<IChartDataset>();
+		var dataset1 = new LineChartDataset
+			{
+				Label = "Gas Prices",
+				Data = GasPrices.Select(gp => double.TryParse(gp.Price, out var price) ? price : (double?)null).ToList(),
+				BackgroundColor = colors[0],
+				BorderColor = colors[0],
+				BorderWidth = 2,
+				HoverBorderWidth = 4,
+				Datalabels = new() { Alignment = Alignment.End, Anchor = Anchor.End }
+			};
+		datasets.Add(dataset1);
+
+		var dataset2 = new LineChartDataset
+			{
+				Label = "Diesel Prices",
+				Data = DieselPrices.Select(gp => double.TryParse(gp.Price, out var price) ? price : (double?)null).ToList(),
+				BackgroundColor = colors[1],
+				BorderColor = colors[1],
+				BorderWidth = 2,
+				HoverBorderWidth = 4,
+				Datalabels = new() { Alignment = Alignment.End, Anchor = Anchor.End }
+			};
+		datasets.Add(dataset2);
+
+		chartData = new ChartData { Labels = labels, Datasets = datasets };
+
+		lineChartOptions = new();
+		lineChartOptions.Responsive = true;
+		lineChartOptions.Interaction = new Interaction { Mode = InteractionMode.Index };
+
+		lineChartOptions.Scales.X!.Title = new ChartAxesTitle { Text = "Date", Display = true };
+		lineChartOptions.Scales.Y!.Title = new ChartAxesTitle { Text = "Prices", Display = true };
+
+		lineChartOptions.Plugins.Title!.Text = "Prices";
+		lineChartOptions.Plugins.Title.Display = true;
 	}
 }
