@@ -1,0 +1,66 @@
+﻿@page "/opgave"
+@inject APIService _apiService
+
+<div class="container-fluid overflow-x-auto">
+    <LineChart @ref="lineChart" Width="800" />
+</div>
+
+@code {
+    private LineChart lineChart = default!;
+    private LineChartOptions lineChartOptions = default!;
+    private ChartData chartData = default!;
+    private List<Benzin> benzinData = new();
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            var data = await _apiService.GetBenzinAsync();
+
+            benzinData = data.ToList();
+
+            var colors = ColorUtility.CategoricalTwelveColors;
+            var labels = benzinData.Select(x => x.Date).ToList();
+            var values = benzinData.Select(x =>
+            {
+                return double.TryParse(x.Price.Replace(",", "."),
+                    System.Globalization.NumberStyles.Any,
+                    System.Globalization.CultureInfo.InvariantCulture,
+                    out var v) ? (double?)v : null;
+            }).ToList();
+
+            chartData = new ChartData
+                {
+                    Labels = labels,
+                    Datasets = new List<IChartDataset>
+                {
+                    new LineChartDataset
+                    {
+                        Label = "Benzin Pris",
+                        Data = values,
+                        BackgroundColor = colors[0],
+                        BorderColor = colors[0],
+                        BorderWidth = 2,
+                        HoverBorderWidth = 4
+                    }
+                }
+                };
+
+            lineChartOptions = new LineChartOptions
+                {
+                    Responsive = true,
+                    Interaction = new Interaction { Mode = InteractionMode.Index },
+                    Scales = new()
+                    {
+                        X = new() { Title = new ChartAxesTitle { Text = "Dato", Display = true } },
+                        Y = new() { Title = new ChartAxesTitle { Text = "Pris", Display = true } }
+                    },
+                };
+
+            await lineChart.InitializeAsync(chartData, lineChartOptions);
+            StateHasChanged();
+        }
+
+        await base.OnAfterRenderAsync(firstRender);
+    }
+}

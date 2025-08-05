@@ -1,3 +1,4 @@
+using System.Net.Http.Json;
 using System.Text.Json;
 
 namespace BlazorWASM.Services
@@ -5,7 +6,7 @@ namespace BlazorWASM.Services
     public class APIService
     {
         private readonly HttpClient _httpClient;
-        private const string BaseUrl = "https://opgaver.mercantec.tech/api";
+        private const string BaseUrl = "https://opgaver.mercantec.tech";
 
         public APIService(HttpClient httpClient)
         {
@@ -16,7 +17,7 @@ namespace BlazorWASM.Services
         {
             try
             {
-                var response = await _httpClient.GetAsync($"{BaseUrl}/Status/all");
+                var response = await _httpClient.GetAsync($"{BaseUrl}/api/Status/all");
 
                 if (response.IsSuccessStatusCode)
                 {
@@ -33,6 +34,14 @@ namespace BlazorWASM.Services
                 return null;
             }
         }
+
+        public async Task<IEnumerable<Benzin>> GetBenzinAsync()
+        {
+            var response = await _httpClient.GetAsync("https://opgaver.mercantec.tech/Opgaver/Miles95");
+            response.EnsureSuccessStatusCode();
+            var results = await response.Content.ReadFromJsonAsync<List<Benzin>>();
+            return results ?? Enumerable.Empty<Benzin>();
+        }
     }
 
     public class BackendStatus
@@ -41,6 +50,11 @@ namespace BlazorWASM.Services
         public DatabaseStatus? MongoDB { get; set; }
         public DatabaseStatus? PostgreSQL { get; set; }
         public DateTime Timestamp { get; set; }
+    }
+    public class Benzin
+    {
+        public string Price { get; set; } = "0";
+        public string Date { get; set; } = "00.00";
     }
 
     public class ServerStatus
