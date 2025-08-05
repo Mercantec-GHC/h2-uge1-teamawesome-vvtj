@@ -1,0 +1,48 @@
+﻿@page "/test"
+@inject BlazorWASM.Services.APIService APIService
+
+<h3>My API Project</h3>
+
+<table class="table caption-top">
+	<caption>Prices for Gas</caption>
+	<thead>
+		<tr>
+			<th scope="col">#</th>
+			<th scope="col">Date</th>
+			<th scope="col">Price</th>
+		</tr>
+	</thead>
+	<tbody>
+		@for (int i = 0; i < Prices.Count; i++)
+		{
+			<tr>
+				<th scope="row">@{ var rowNumber = i + 1; } @rowNumber</th>
+				<td>@Prices[i].Date</td>
+				<td>@Prices[i].Price</td>
+			</tr>
+		}
+	</tbody>
+</table>
+
+@code {
+	public class GasPrice
+	{
+		public string? Date { get; set; }
+		public string? Price { get; set; }
+	}
+
+	public List<GasPrice> Prices = new();
+
+	protected override async Task OnInitializedAsync()
+	{
+		var prices = await APIService.GetPricesAsync();
+		if (prices != null)
+		{
+			Prices = prices;
+		}
+		else
+		{
+			Console.WriteLine("Not Found");
+		}
+	}
+}

@@ -1,11 +1,13 @@
 using System.Text.Json;
+using Azure;
+using static BlazorWASM.Pages.MyAPIProject;
 
 namespace BlazorWASM.Services
 {
     public class APIService
     {
         private readonly HttpClient _httpClient;
-        private const string BaseUrl = "https://opgaver.mercantec.tech/api";
+        private const string BaseUrl = "https://opgaver.mercantec.tech/";
 
         public APIService(HttpClient httpClient)
         {
@@ -33,7 +35,32 @@ namespace BlazorWASM.Services
                 return null;
             }
         }
-    }
+
+		public async Task<List<GasPrice>?> GetPricesAsync()
+		{
+			try
+			{
+				var response = await _httpClient.GetAsync($"{BaseUrl}Opgaver/Miles95");
+
+				if (response.IsSuccessStatusCode)
+				{
+					var jsonString = await response.Content.ReadAsStringAsync();
+					return JsonSerializer.Deserialize<List<GasPrice>?>(jsonString);
+				}
+
+				else
+				{
+					Console.WriteLine($"Error: {response.StatusCode}");
+					return new List<GasPrice>();
+				}
+			}
+			catch (Exception ex)
+			{
+				Console.WriteLine($"Error: {ex}");
+				return null;
+			}
+		}
+	}
 
     public class BackendStatus
     {
