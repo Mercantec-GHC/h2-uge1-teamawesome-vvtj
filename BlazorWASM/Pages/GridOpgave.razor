@@ -1,0 +1,114 @@
+﻿@page "/gridOpgave"
+@inject APIService _apiService
+
+<Grid TItem="FuelData"
+      AllowPaging="true"
+      AllowSorting="true"
+      Class="table table-hover table-bordered table-striped"
+      DataProvider="DataProvider"
+      PageSize="5"
+      Responsive="true">
+    <GridColumns>
+        <GridColumn TItem="FuelData" HeaderText="FuelType" PropertyName="FuelType">
+            @context.FuelType
+        </GridColumn>
+        <GridColumn TItem="FuelData" HeaderText="LastPrice" PropertyName="LastPrice">
+            @context.LastPrice
+        </GridColumn>
+        <GridColumn TItem="FuelData" HeaderText="AvaragePrice" PropertyName="AvaragePrice" SortKeySelector="item => item.AvaragePrice">
+            @context.AvaragePrice
+        </GridColumn>
+        <GridColumn TItem="FuelData" HeaderText="Mediana" PropertyName="Mediana" SortKeySelector="item => item.Mediana">
+            @context.Mediana
+        </GridColumn>
+        <GridColumn TItem="FuelData" HeaderText="Variance" PropertyName="Variance" SortKeySelector="item => item.Variance">
+            @context.Variance
+        </GridColumn>
+    </GridColumns>
+
+</Grid>
+
+@code {
+    private IEnumerable<FuelData> data = default!;
+
+    private async Task<GridDataProviderResult<FuelData>> DataProvider(GridDataProviderRequest<FuelData> request)
+    {
+        if (data is null) // pull data only once for client-side filtering, sorting, and paging
+            data = await GetFuelDataAsync(); // async API call
+
+        return request.ApplyTo(data); 
+    }
+
+    public async Task<IEnumerable<FuelData>> GetFuelDataAsync()
+    {
+        return await GetFuelPrice(); 
+    }
+
+    private async Task<IEnumerable<FuelData>> GetFuelPrice()
+    {
+        var benzin = await _apiService.GetBenzinAsync();
+        var diezel = await _apiService.GetDiezelAsync();
+
+        FuelData benzinData = new FuelData()
+            {
+                FuelType = "Benzin",
+                LastPrice = benzin.Last().Price,
+                AvaragePrice =  benzin.Average(x => x.Price),
+                Mediana = CalculateMedian(benzin.Select(x => x.Price)),
+                Variance = CalculateVariance(benzin.Select(x => x.Price)),
+                Price = benzin
+            };
+
+        FuelData diezelData = new FuelData()
+            {
+                FuelType = "Diesel",
+                LastPrice = diezel.Last().Price,
+                AvaragePrice = diezel.Average(x => x.Price),
+                Mediana = CalculateMedian(diezel.Select(x => x.Price)),
+                Variance = CalculateVariance(diezel.Select(x => x.Price)),
+                Price = diezel
+            };
+
+        return new List<FuelData>
+        {
+            benzinData,
+            diezelData
+        };
+    }
+
+    public double CalculateMedian(IEnumerable<double> values)
+    {
+        if (values == null)
+            return 0;
+
+        var sorted = values.OrderBy(x => x).ToList();
+        int count = sorted.Count;
+        int mid = count / 2;
+
+        return count % 2 == 0
+            ? (sorted[mid - 1] + sorted[mid]) / 2.0
+            : sorted[mid];
+    }
+
+    public double CalculateVariance(IEnumerable<double> values)
+    {
+        if (values == null)
+            return 0;
+
+        double average = values.Average();
+        double variance = values.Sum(x => Math.Pow(x - average, 2)) / values.Count();
+
+        return variance;
+    }
+
+    
+    public class FuelData
+    {
+        public string FuelType{ get; set; }
+        public double LastPrice{ get; set; }
+        public double AvaragePrice { get; set; }
+        public double Mediana { get; set; }
+        public double Variance { get; set; }
+        public IEnumerable<Fuel> Price { get; set; }
+    }
+}

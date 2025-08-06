@@ -5,62 +5,180 @@
     <LineChart @ref="lineChart" Width="800" />
 </div>
 
+<Grid TItem="FuelViewModel"
+      Class="table table-hover table-bordered table-striped"
+      DataProvider="DataProvider"
+      PageSize="5"
+      Responsive="true">
+    <GridColumns>
+        <GridColumn TItem="FuelViewModel" HeaderText="FuelType" PropertyName="FuelType">
+            @context.FuelType
+        </GridColumn>
+        <GridColumn TItem="FuelViewModel" HeaderText="LastPrice" PropertyName="LastPrice">
+            @context.LastPrice
+        </GridColumn>
+        <GridColumn TItem="FuelViewModel" HeaderText="AvaragePrice" PropertyName="AvaragePrice" SortKeySelector="item => item.AvaragePrice">
+            @context.AvaragePrice
+        </GridColumn>
+        <GridColumn TItem="FuelViewModel" HeaderText="Mediana" PropertyName="Mediana" SortKeySelector="item => item.Mediana">
+            @context.Mediana
+        </GridColumn>
+        <GridColumn TItem="FuelViewModel" HeaderText="Variance" PropertyName="Variance" SortKeySelector="item => item.Variance">
+            @context.Variance
+        </GridColumn>
+    </GridColumns>
+
+</Grid>
+
 @code {
     private LineChart lineChart = default!;
     private LineChartOptions lineChartOptions = default!;
     private ChartData chartData = default!;
-    private List<Benzin> benzinData = new();
+    private IEnumerable<FuelViewModel> data = default!;
+    private List<Fuel> benzinData = new();
+    private List<Fuel> diezelData = new();
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
         {
-            var data = await _apiService.GetBenzinAsync();
+            var benzin = await _apiService.GetBenzinAsync();
+            var diezel = await _apiService.GetDiezelAsync();
 
-            benzinData = data.ToList();
+            benzinData = benzin.ToList();
+            diezelData = diezel.ToList();
 
             var colors = ColorUtility.CategoricalTwelveColors;
-            var labels = benzinData.Select(x => x.Date).ToList();
-            var values = benzinData.Select(x =>
-            {
-                return double.TryParse(x.Price.Replace(",", "."),
-                    System.Globalization.NumberStyles.Any,
-                    System.Globalization.CultureInfo.InvariantCulture,
-                    out var v) ? (double?)v : null;
-            }).ToList();
+
+            var benzinLabels = benzinData.Select(x => x.Date).ToList();
+            var diezelLabels = diezelData.Select(x => x.Date).ToList();
+
+            var benzinValues = benzinData.Select(x => (double?)x.Price).ToList();
+            var diezelValues = diezelData.Select(x => (double?)x.Price).ToList();
+
 
             chartData = new ChartData
+            {
+                Labels = benzinLabels, 
+                Datasets = new List<IChartDataset>
+            {
+                new LineChartDataset
                 {
-                    Labels = labels,
-                    Datasets = new List<IChartDataset>
+                    Label = "Benzin Pris",
+                    Data = benzinValues,
+                    BackgroundColor = colors[0],
+                    BorderColor = colors[0],
+                    BorderWidth = 2,
+                    HoverBorderWidth = 4
+                },
+                new LineChartDataset
                 {
-                    new LineChartDataset
-                    {
-                        Label = "Benzin Pris",
-                        Data = values,
-                        BackgroundColor = colors[0],
-                        BorderColor = colors[0],
-                        BorderWidth = 2,
-                        HoverBorderWidth = 4
-                    }
+                    Label = "Diezel Pris",
+                    Data = diezelValues,
+                    BackgroundColor = colors[1],
+                    BorderColor = colors[1],
+                    BorderWidth = 2,
+                    HoverBorderWidth = 4
                 }
-                };
+            }
+            };
 
             lineChartOptions = new LineChartOptions
+            {
+                Responsive = true,
+                Interaction = new Interaction { Mode = InteractionMode.Index },
+                Scales = new()
                 {
-                    Responsive = true,
-                    Interaction = new Interaction { Mode = InteractionMode.Index },
-                    Scales = new()
-                    {
-                        X = new() { Title = new ChartAxesTitle { Text = "Dato", Display = true } },
-                        Y = new() { Title = new ChartAxesTitle { Text = "Pris", Display = true } }
-                    },
-                };
+                    X = new() { Title = new ChartAxesTitle { Text = "Dato", Display = true } },
+                    Y = new() { Title = new ChartAxesTitle { Text = "Pris", Display = true } }
+                },
+            };
 
             await lineChart.InitializeAsync(chartData, lineChartOptions);
             StateHasChanged();
         }
 
         await base.OnAfterRenderAsync(firstRender);
+    }
+
+    private async Task<GridDataProviderResult<FuelViewModel>> DataProvider(GridDataProviderRequest<FuelViewModel> request)
+    {
+        if (data is null) // pull data only once for client-side filtering, sorting, and paging
+            data = await GetFuelDataAsync(); // async API call
+
+        return request.ApplyTo(data);
+    }
+
+    public async Task<IEnumerable<FuelViewModel>> GetFuelDataAsync()
+    {
+        return await GetFuelPrice();
+    }
+
+    private async Task<IEnumerable<FuelViewModel>> GetFuelPrice()
+    {
+        var benzin = await _apiService.GetBenzinAsync();
+        var diezel = await _apiService.GetDiezelAsync();
+
+        FuelViewModel benzinData = new FuelViewModel()
+        {
+            FuelType = "Benzin",
+            LastPrice = benzin.Last().Price,
+            AvaragePrice = benzin.Average(x => x.Price),
+            Mediana = CalculateMedian(benzin.Select(x => x.Price)),
+            Variance = CalculateVariance(benzin.Select(x => x.Price)),
+            Price = benzin
+        };
+
+        FuelViewModel diezelData = new FuelViewModel()
+        {
+            FuelType = "Diesel",
+            LastPrice = diezel.Last().Price,
+            AvaragePrice = diezel.Average(x => x.Price),
+            Mediana = CalculateMedian(diezel.Select(x => x.Price)),
+            Variance = CalculateVariance(diezel.Select(x => x.Price)),
+            Price = diezel
+        };
+
+        return new List<FuelViewModel>
+        {
+            benzinData,
+            diezelData
+        };
+    }
+
+    public double CalculateMedian(IEnumerable<double> values)
+    {
+        if (values == null)
+            return 0;
+
+        var sorted = values.OrderBy(x => x).ToList();
+        int count = sorted.Count;
+        int mid = count / 2;
+
+        return count % 2 == 0
+            ? (sorted[mid - 1] + sorted[mid]) / 2.0
+            : sorted[mid];
+    }
+
+    public double CalculateVariance(IEnumerable<double> values)
+    {
+        if (values == null)
+            return 0;
+
+        double average = values.Average();
+        double variance = values.Sum(x => Math.Pow(x - average, 2)) / values.Count();
+
+        return variance;
+    }
+
+
+    public class FuelViewModel
+    {
+        public string FuelType { get; set; }
+        public double LastPrice { get; set; }
+        public double AvaragePrice { get; set; }
+        public double Mediana { get; set; }
+        public double Variance { get; set; }
+        public IEnumerable<Fuel> Price { get; set; }
     }
 }
