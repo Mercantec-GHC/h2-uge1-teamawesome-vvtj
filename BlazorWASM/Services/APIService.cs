@@ -1,6 +1,5 @@
 using System.Net.Http.Json;
 using System.Text.Json;
-using static BlazorWASM.Pages.GridOpgave;
 
 namespace BlazorWASM.Services
 {
@@ -47,21 +46,8 @@ namespace BlazorWASM.Services
         {
             var response = await _httpClient.GetAsync($"{BaseUrl}/Opgaver/Diesel");
             response.EnsureSuccessStatusCode();
-            var rawResults = await response.Content.ReadFromJsonAsync<List<Dto>>();
-
-            var cleanResults = rawResults?
-                .Select(f => new Fuel
-                {
-                    Date = f.Date,
-                    Price = double.TryParse(
-                        f.Price.Replace(",", "."),
-                        System.Globalization.NumberStyles.Any,
-                        System.Globalization.CultureInfo.InvariantCulture,
-                        out var value
-                    ) ? value : 0.0
-                }) ?? Enumerable.Empty<Fuel>();
-
-            return cleanResults;
+            var results = await response.Content.ReadFromJsonAsync<List<Fuel>>();
+            return results ?? Enumerable.Empty<Fuel>();
         }
     }
     
@@ -72,12 +58,7 @@ namespace BlazorWASM.Services
         public DatabaseStatus? PostgreSQL { get; set; }
         public DateTime Timestamp { get; set; }
     }
-    public class Dto
-    {
-        public string Price { get; set; }
-        public string Date { get; set; }
-    }
-
+   
     public class Fuel
     {
         public double Price { get; set; }
