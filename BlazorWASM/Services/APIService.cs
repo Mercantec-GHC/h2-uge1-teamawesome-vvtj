@@ -18,7 +18,7 @@ namespace BlazorWASM.Services
         {
             try
             {
-                var response = await _httpClient.GetAsync($"{BaseUrl}/Status/all");
+                var response = await _httpClient.GetAsync($"{BaseUrl}api/Status/all");
 
                 if (response.IsSuccessStatusCode)
                 {
@@ -85,8 +85,41 @@ namespace BlazorWASM.Services
 				return null;
 			}
 		}
+		//public async Task<List<DieselPrice>?> GetDieselPricesAsync()
+		//{
+		//	try
+		//	{
+		//		var response = await _httpClient.GetAsync($"{BaseUrl}Countries");
+
+		//		if (response.IsSuccessStatusCode)
+		//		{
+		//			var jsonString = await response.Content.ReadAsStringAsync();
+		//			return JsonSerializer.Deserialize<List<DieselPrice>?>(jsonString);
+		//		}
+
+		//		else
+		//		{
+		//			Console.WriteLine($"Error: {response.StatusCode}");
+		//			return new List<DieselPrice>();
+		//		}
+		//	}
+		//	catch (Exception ex)
+		//	{
+		//		Console.WriteLine($"Error: {ex}");
+		//		return null;
+		//	}
+		//}
+	}
+	public class Countries
+	{
+		public int Id { get; set; }
+		public string? Name { get; set; }
+		public string? Capital { get; set; }
+		public int Population { get; set; }
+
 	}
 
+	
 	public class GasPrice
 	{
 		public string? Date { get; set; }
