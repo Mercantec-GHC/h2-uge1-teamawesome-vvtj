@@ -36,7 +36,7 @@ namespace BlazorWASM.Services
             }
         }
 
-        public async Task<List<BenzinClass>> GetOpgavesAsync()
+        public async Task<List<DieselClass>> GetOpgavesAsync()
         {
             try
             {
@@ -44,18 +44,18 @@ namespace BlazorWASM.Services
                 if (response.IsSuccessStatusCode)
                 {
                     var json = await response.Content.ReadAsStringAsync();
-                    return JsonSerializer.Deserialize<List<BenzinClass>>(json);
+                    return JsonSerializer.Deserialize<List<DieselClass>>(json);
                 }
                 else
                 {
                     Console.WriteLine($"Fejl: {response.StatusCode}");
-                    return new List<BenzinClass>();
+                    return new List<DieselClass>();
                 }
             }
             catch (HttpRequestException ex)
             {
                 Console.WriteLine($"Netværksfejl: {ex.Message}");
-                return new List<BenzinClass>();
+                return new List<DieselClass>();
             }
         }
     }
@@ -81,9 +81,14 @@ namespace BlazorWASM.Services
         public string? Error { get; set; }
         public bool IsError { get; set; }
     }
-    
-    public class BenzinClass{
-        public string? Price;
-        public string? Date;
+
+    public class DieselClass
+    {
+        public string? Price { get; set; }
+        public string? Date { get; set; }
+
+        //Ternary
+        public decimal PriceRange => decimal.TryParse(Price, out var p) ? p : 0;
+        public DateTime DateRange => DateTime.TryParse(Date, out var d) ? d : DateTime.MinValue;
     }
 }
