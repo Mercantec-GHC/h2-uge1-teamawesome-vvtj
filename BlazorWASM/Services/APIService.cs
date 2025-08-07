@@ -34,20 +34,36 @@ namespace BlazorWASM.Services
             }
         }
 
-        public async Task<IEnumerable<Fuel>> GetBenzinAsync()
+        public async Task<IEnumerable<Fuel>?> GetBenzinAsync()
         {
-            var response = await _httpClient.GetAsync($"{BaseUrl}/Opgaver/Miles95");
-            response.EnsureSuccessStatusCode();
-            var results = await response.Content.ReadFromJsonAsync<List<Fuel>>();
-            return results ?? Enumerable.Empty<Fuel>();
+            try
+            {
+                var response = await _httpClient.GetAsync($"{BaseUrl}/Opgaver/Miles95");
+                response.EnsureSuccessStatusCode();
+                var results = await response.Content.ReadFromJsonAsync<List<Fuel>>();
+                return results;
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine($"Fejl ved get af benzin pris: {ex.Message}");
+                return null;
+            }
         }
 
-        public async Task<IEnumerable<Fuel>> GetDiezelAsync()
+        public async Task<IEnumerable<Fuel>?> GetDiezelAsync()
         {
-            var response = await _httpClient.GetAsync($"{BaseUrl}/Opgaver/Diesel");
-            response.EnsureSuccessStatusCode();
-            var results = await response.Content.ReadFromJsonAsync<List<Fuel>>();
-            return results ?? Enumerable.Empty<Fuel>();
+            try
+            {
+                var response = await _httpClient.GetAsync($"{BaseUrl}/Opgaver/Diesel");
+                response.EnsureSuccessStatusCode();
+                var results = await response.Content.ReadFromJsonAsync<List<Fuel>>();
+                return results;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Fejl ved get af diezel pris: {ex.Message}");
+                return null;
+            }
         }
     }
     
