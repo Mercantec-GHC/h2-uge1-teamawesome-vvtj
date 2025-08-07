@@ -1,3 +1,4 @@
+using System.ComponentModel;
 using System.Text.Json;
 using BlazorWASM.Pages;
 
@@ -8,6 +9,7 @@ namespace BlazorWASM.Services
     {
         private readonly HttpClient _httpClient;
         private const string BaseUrl = "https://opgaver.mercantec.tech";
+        private const string BaseUrl_2 = "https://opgaver.mercantec.tech";
 
         public APIService(HttpClient httpClient)
         {
@@ -36,7 +38,7 @@ namespace BlazorWASM.Services
             }
         }
 
-        public async Task<List<DieselClass>> GetOpgavesAsync()
+        public async Task<List<DieselClass>> GetDieselAsync()
         {
             try
             {
@@ -56,6 +58,29 @@ namespace BlazorWASM.Services
             {
                 Console.WriteLine($"Netværksfejl: {ex.Message}");
                 return new List<DieselClass>();
+            }
+        }
+
+        public async Task<List<BenzinClass>> GetBenzinAsync()
+        {
+            try
+            {
+                var response = await _httpClient.GetAsync($"{BaseUrl_2}/Opgaver/Miles95");
+                if (response.IsSuccessStatusCode)
+                {
+                    var json = await response.Content.ReadAsStringAsync();
+                    return JsonSerializer.Deserialize<List<BenzinClass>>(json);
+                }
+                else
+                {
+                    Console.WriteLine($"Error: {response.StatusCode}");
+                    return new List<BenzinClass>();
+                }
+            }
+            catch (HttpRequestException ex)
+            {
+                Console.WriteLine($"Networks error: {ex.Message}");
+                return new List<BenzinClass>();
             }
         }
     }
@@ -90,5 +115,12 @@ namespace BlazorWASM.Services
         //Ternary
         public decimal PriceRange => decimal.TryParse(Price, out var p) ? p : 0;
         public DateTime DateRange => DateTime.TryParse(Date, out var d) ? d : DateTime.MinValue;
+    }
+
+    public class BenzinClass
+    {
+        public string? Price { get; set; }
+        public string? Date { get; set; }
+
     }
 }
