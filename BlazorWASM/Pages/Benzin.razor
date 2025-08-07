@@ -4,7 +4,7 @@
 @using BlazorWASM.Services
 
 
-<h1>Benzin</h1>
+<h1>Diesel</h1>
 
 <input type="date" @bind="StartDate"/>
 <input type="date" @bind="EndDate"/>
@@ -41,11 +41,11 @@
         </thead>
         
         <tbody>
-            @foreach (var benzin in FilteredList)
+            @foreach (var Diesel in FilteredList)
             {
                 <tr>
-                    <td>@benzin.Date</td>
-                    <td>@benzin.Price</td>
+                    <td>@Diesel.Date</td>
+                    <td>@Diesel.Price</td>
                 </tr>
             }
         </tbody>

@@ -30,6 +30,7 @@ public partial class Benzin : ComponentBase
     protected override async Task OnInitializedAsync()
     {
         listOfDiesel = await APIService.GetDieselAsync();
+        listOfBenzin = await APIService.GetBenzinAsync();
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -57,32 +58,37 @@ public partial class Benzin : ComponentBase
 
     private async Task RenderWormAsync()
     {
-        var newListDate_Diesel = new List<string>();
         var newListPrice_Diesel = new List<double?>();
-
-        var newListDate_Benzin = new List<string>();
         var newListPrice_Benzin = new List<double?>();
+
+        var combinedDates = new HashSet<string>();
+
+        foreach (var d in listOfDiesel)
+        {
+            combinedDates.Add(d.Date);
+        }
+
+        foreach (var b in listOfBenzin)
+        {
+            combinedDates.Add(b.Date);
+        }
+
+        var sortedDates = combinedDates.OrderBy(d => DateTime.Parse(d)).ToList();
 
         foreach (var i in listOfDiesel)
         {
-            newListDate_Diesel.Add(i.Date);
             newListPrice_Diesel.Add(Convert.ToDouble(i.Price));
-
         }
 
         foreach (var i in listOfBenzin)
-        {
-            newListDate_Benzin.Add(i.Date);
+        {   
             newListPrice_Benzin.Add(Convert.ToDouble(i.Price));
         }
-
-        // var newList = newListDate_Diesel.Concat(newListDate_Benzin);
-        newListDate_Diesel.AddRange(newListDate_Benzin);
 
         Console.WriteLine();
         var data = new ChartData
         {
-            Labels = newListDate_Diesel,
+            Labels = sortedDates,
             Datasets = new List<IChartDataset>()
                 {
                     new LineChartDataset()
