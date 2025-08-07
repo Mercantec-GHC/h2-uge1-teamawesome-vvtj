@@ -1,5 +1,5 @@
 using System.Text.Json;
-using Azure;
+using BlazorWASM.Components;
 using static BlazorWASM.Pages.MyAPIProject;
 
 namespace BlazorWASM.Services
@@ -85,41 +85,63 @@ namespace BlazorWASM.Services
 				return null;
 			}
 		}
-		//public async Task<List<DieselPrice>?> GetDieselPricesAsync()
-		//{
-		//	try
-		//	{
-		//		var response = await _httpClient.GetAsync($"{BaseUrl}Countries");
+		public async Task<List<Country>> GetAllCountriesAsync()
+		{
+			try
+			{
+				var response = await _httpClient.GetAsync($"{BaseUrl}api/Countries");
 
-		//		if (response.IsSuccessStatusCode)
-		//		{
-		//			var jsonString = await response.Content.ReadAsStringAsync();
-		//			return JsonSerializer.Deserialize<List<DieselPrice>?>(jsonString);
-		//		}
+				if (response.IsSuccessStatusCode)
+				{
+					var jsonString = await response.Content.ReadAsStringAsync();
+					var countries = JsonSerializer.Deserialize<List<Country>>(jsonString, new JsonSerializerOptions
+					{
+						PropertyNameCaseInsensitive = true
+					});
+					return countries ?? new List<Country>();
+				}
+				else
+				{
+					Console.WriteLine($"Error: {response.StatusCode}");
+					return new List<Country>();
+				}
+			}
+			catch (Exception ex)
+			{
+				Console.WriteLine($"Exception: {ex.Message}");
+				return new List<Country>();
+			}
+		}
+		public async Task<CountryDataById> GetCountryDataByIdAsync(string guid)
+		{
+			try
+			{
 
-		//		else
-		//		{
-		//			Console.WriteLine($"Error: {response.StatusCode}");
-		//			return new List<DieselPrice>();
-		//		}
-		//	}
-		//	catch (Exception ex)
-		//	{
-		//		Console.WriteLine($"Error: {ex}");
-		//		return null;
-		//	}
-		//}
+				var response = await _httpClient.GetAsync($"{BaseUrl}api/Countries/{guid}");
+
+				if (response.IsSuccessStatusCode)
+				{
+					var jsonString = await response.Content.ReadAsStringAsync();
+					var countryData = JsonSerializer.Deserialize<CountryDataById>(jsonString, new JsonSerializerOptions
+					{
+						PropertyNameCaseInsensitive = true
+					});
+					return countryData ?? new CountryDataById();
+				}
+				else
+				{
+					Console.WriteLine($"Error: {response.StatusCode}");
+					return new CountryDataById();
+				}
+			}
+			catch (Exception ex)
+			{
+				Console.WriteLine($"Exception: {ex.Message}");
+				return new CountryDataById();
+			}
+		}
 	}
-	public class Countries
-	{
-		public int Id { get; set; }
-		public string? Name { get; set; }
-		public string? Capital { get; set; }
-		public int Population { get; set; }
 
-	}
-
-	
 	public class GasPrice
 	{
 		public string? Date { get; set; }

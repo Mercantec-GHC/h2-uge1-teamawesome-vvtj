@@ -1,0 +1,122 @@
+﻿@page "/countries/{countryId}"
+@inject BlazorWASM.Services.APIService APIService
+@using BlazorWASM.Components;
+
+@if (!IsVisible)
+{
+	<p>No data available</p>
+}
+
+else
+{
+	<div class="container-fluid">
+		<div class="d-flex justify-content-center">
+			<Card Style="width:35rem;" Class="m-2 bg-body-tertiary container ">
+				<CardBody Class="mx-0 px-0">
+					<CardTitle Class="m-0">
+						<div class="bg-warning py-2 w-100">
+							<div class="text-center text-white fw-bold">@countryDashboard?.Name?.Official</div>
+						</div>
+					</CardTitle>
+				</CardBody>
+				<div class="flag-wrapper mb-3 px-2">
+					<img class="flag-img" src="@countryDashboard?.Flags?.Svg" alt="Country flag" />
+				</div>
+				<ul class="list-group list-group-flush">
+					@if (countryDashboard?.Capital != null && !string.IsNullOrWhiteSpace(countryDashboard.Capital[0]))
+					{
+						<li class="list-group-item">
+							<div><span class="text-success-emphasis fw-bolder">Capital: </span>@countryDashboard.Capital[0]</div>
+						</li>
+					}
+
+					<li class="list-group-item">
+						@if (countryDashboard?.Languages != null && countryDashboard.Languages.Any())
+						{
+							<div>
+								<span class="text-success-emphasis fw-bolder">Oficial language(s): </span>
+								<ul>
+									@foreach (var language in countryDashboard.Languages)
+									{
+										<li>@language.Value</li>
+									}
+								</ul>
+							</div>
+						}
+					</li>
+					<li class="list-group-item">
+						@if (countryDashboard?.Currencies != null && countryDashboard.Currencies.Any())
+						{
+							<div>
+								<span class="text-success-emphasis fw-bolder">Oficial currency(ies): </span>
+								<ul>
+									@foreach (var currency in countryDashboard.Currencies)
+									{
+
+										<li>@currency.Value.CurrencyName</li>
+									}
+								</ul>
+							</div>
+						}
+					</li>
+				</ul>
+				<CardBody Class="d-flex flex-row justify-content-evenly bg-body-tertiary">
+					<Button Class="btn-success" @onclick="() => NavigateToList()">Back to the list</Button>
+					<Button Class="btn-outline-primary" @onclick="() => NavigateToMain()">Back to main page</Button>
+				</CardBody>
+			</Card>
+		</div>
+	</div>
+}
+
+<style>
+	.flag-wrapper {
+		width: 100%;
+		height: 20rem;
+		display: block;
+		align-self: center;
+	}
+
+	.container {
+		box-shadow: 2px 2px 5px 1px #e0dddd;
+	}
+	.flag-img {
+		width: 100%;
+		height: 100%;
+		margin-right: 15px;
+		object-fit: cover;
+		box-shadow: 2px 2px 5px 2px #bdb9b9;
+		border-radius: 0.25rem;
+	}
+</style>
+@code {
+	[Parameter]
+	public string? countryId { get; set; }
+	[Parameter]
+	public bool IsVisible { get; set; } = false;
+	[Inject]
+	NavigationManager NavigationManager { get; set; } = default!;
+	public CountryDataById? countryDashboard;
+
+	protected override async Task OnInitializedAsync()
+	{
+		//if (Guid.TryParse(countryId, out Guid countryGuid))
+		//{
+		countryDashboard = await APIService.GetCountryDataByIdAsync(countryId) ?? new CountryDataById();
+		IsVisible = true;
+		//}
+		await base.OnInitializedAsync();
+	}
+	public void NavigateToList()
+	{
+		var navUrl = $"/countries";
+		NavigationManager.NavigateTo(navUrl);
+
+	}
+	public void NavigateToMain()
+	{
+		var navUrl = $"/";
+		NavigationManager.NavigateTo(navUrl);
+
+	}
+}
