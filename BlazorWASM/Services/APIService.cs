@@ -123,4 +123,12 @@ namespace BlazorWASM.Services
         public string? Date { get; set; }
 
     }
+
+    public class Fuel
+    {
+        public string? Date { get; set; }
+        public string? BenzinPrice { get; set; }
+        public string? DieselPrice { get; set; }
+        
+    }
 }

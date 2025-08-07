@@ -25,7 +25,7 @@
     </Modal>
 
 <table class="table">
-    @if (listOfDiesel == null)
+    @if (listOfFuelPrices == null)
     {
         <tr>
             <td>Indlæser...</td>
@@ -36,16 +36,18 @@
         <thead>
             <tr>
                 <th>Date</th>
-                <th>Price</th>
+                <th>Diesel Price</th>
+                <th>Benzin Price</th>
             </tr>
         </thead>
         
         <tbody>
-            @foreach (var Diesel in FilteredList)
+            @foreach (var fuel in listOfFuelPrices)
             {
                 <tr>
-                    <td>@Diesel.Date</td>
-                    <td>@Diesel.Price</td>
+                    <td>@fuel.Date</td>
+                    <td>@fuel.DieselPrice</td>
+                    <td>@fuel.BenzinPrice</td>
                 </tr>
             }
         </tbody>

@@ -20,7 +20,7 @@ public partial class Benzin : ComponentBase
 
     public List<DieselClass> listOfDiesel = new List<DieselClass>();
     public List<BenzinClass> listOfBenzin = new List<BenzinClass>();
-
+    
     private List<DieselClass> FilteredList => listOfDiesel.Where(b => (!SelectedYear.HasValue || b.DateRange.Year == SelectedYear.Value) &&
                                                                       (!StartDate.HasValue || b.DateRange >= StartDate.Value) &&
                                                                       (!EndDate.HasValue || b.DateRange <= EndDate.Value) &&
@@ -31,6 +31,7 @@ public partial class Benzin : ComponentBase
     {
         listOfDiesel = await APIService.GetDieselAsync();
         listOfBenzin = await APIService.GetBenzinAsync();
+        await FuelList();
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -44,25 +45,16 @@ public partial class Benzin : ComponentBase
 
     private async Task OnShowModalClick()
     {
+        await FuelList();
         await modal.ShowAsync();
         shouldRenderChart = true;
     }
-
-    // private async Task OnHideModalClick()
-    // {
-    //     await modal.HideAsync();
-    // }
     
-    private LineChart lineChart = default!;
-
-
-    private async Task RenderWormAsync()
+    //This is where I am having problems??
+    public List<Fuel> listOfFuelPrices = new List<Fuel>();
+    private async Task FuelList()
     {
-        var newListPrice_Diesel = new List<double?>();
-        var newListPrice_Benzin = new List<double?>();
-
         var combinedDates = new HashSet<string>();
-
         foreach (var d in listOfDiesel)
         {
             combinedDates.Add(d.Date);
@@ -73,22 +65,48 @@ public partial class Benzin : ComponentBase
             combinedDates.Add(b.Date);
         }
 
-        var sortedDates = combinedDates.OrderBy(d => DateTime.Parse(d)).ToList();
-
-        foreach (var i in listOfDiesel)
+        foreach (var date in combinedDates.OrderBy(d => DateTime.Parse(d)))
         {
-            newListPrice_Diesel.Add(Convert.ToDouble(i.Price));
+            var diesel = listOfDiesel.FirstOrDefault(d => d.Date == date);
+            var benzin = listOfBenzin.FirstOrDefault(b => b.Date == date);
+
+            //Create new fuel object
+            listOfFuelPrices.Add(new Fuel
+            {
+                Date = date,
+                DieselPrice = diesel?.Price,
+                BenzinPrice = benzin?.Price
+            });
         }
 
-        foreach (var i in listOfBenzin)
-        {   
-            newListPrice_Benzin.Add(Convert.ToDouble(i.Price));
+    }
+
+    // private async Task OnHideModalClick()
+    // {
+    //     await modal.HideAsync();
+    // }
+
+    private LineChart lineChart = default!;
+
+    private async Task RenderWormAsync()
+    {
+        var newListPrice_Diesel = new List<double?>();
+        var newListPrice_Benzin = new List<double?>();
+        var newListofDates = new List<string>();
+
+
+        foreach (var i in listOfFuelPrices)
+        {
+            newListPrice_Diesel.Add(Convert.ToDouble(i.DieselPrice));
+            newListPrice_Benzin.Add(Convert.ToDouble(i.BenzinPrice));
+            newListofDates.Add(i.Date);
         }
 
+    
         Console.WriteLine();
         var data = new ChartData
         {
-            Labels = sortedDates,
+            Labels = newListofDates,
             Datasets = new List<IChartDataset>()
                 {
                     new LineChartDataset()
@@ -99,10 +117,9 @@ public partial class Benzin : ComponentBase
                         BorderColor = "rgb(88, 80, 141)",
                         BorderWidth = 2,
                         HoverBorderWidth = 4,
-                        //PointBackgroundColor = "rgb(88, 80, 141)",
-                        //PointBorderColor = "rgb(88, 80, 141)",
-                        //PointRadius = 0, // hide points
-                        //PointHoverRadius = 4,
+                        PointRadius = null,
+                        
+                
                     },
                      new LineChartDataset()
                      {
@@ -112,10 +129,7 @@ public partial class Benzin : ComponentBase
                          BorderColor = "rgb(255, 166, 0)",
                          BorderWidth = 2,
                          HoverBorderWidth = 4,
-                         // PointBackgroundColor = "rgb(255, 166, 0)",
-                         // PointBorderColor = "rgb(255, 166, 0)",
-                         // PointRadius = 0, // hide points
-                         // PointHoverRadius = 4,
+
                      }
                 }
         };
