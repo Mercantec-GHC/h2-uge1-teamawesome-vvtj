@@ -1,0 +1,19 @@
+﻿.flag-wrapper {
+    width: 100%;
+    height: 20rem;
+    display: block;
+    align-self: center;
+}
+
+.container {
+    box-shadow: 2px 2px 5px 1px #e0dddd;
+}
+
+.flag-img {
+    width: 100%;
+    height: 100%;
+    margin-right: 15px;
+    object-fit: cover;
+    box-shadow: 2px 2px 5px 2px #bdb9b9;
+    border-radius: 0.25rem;
+}

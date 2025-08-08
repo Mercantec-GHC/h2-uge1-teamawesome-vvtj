@@ -1,6 +1,4 @@
-﻿@page "/countries/{countryId}"
-@inject BlazorWASM.Services.APIService APIService
-@using BlazorWASM.Components;
+﻿@page "/countries/{CountryId}"
 
 @if (!IsVisible)
 {
@@ -73,52 +71,4 @@ else
 			</Card>
 		</div>
 	</div>
-}
-
-<style>
-	.flag-wrapper {
-		width: 100%;
-		height: 20rem;
-		display: block;
-		align-self: center;
-	}
-
-	.container {
-		box-shadow: 2px 2px 5px 1px #e0dddd;
-	}
-	.flag-img {
-		width: 100%;
-		height: 100%;
-		margin-right: 15px;
-		object-fit: cover;
-		box-shadow: 2px 2px 5px 2px #bdb9b9;
-		border-radius: 0.25rem;
-	}
-</style>
-@code {
-	[Parameter]
-	public string? countryId { get; set; }
-	[Parameter]
-	public bool IsVisible { get; set; } = false;
-	[Inject]
-	NavigationManager NavigationManager { get; set; } = default!;
-	public CountryDataById? countryDashboard;
-
-	protected override async Task OnInitializedAsync()
-	{
-		countryDashboard = await APIService.GetCountryDataByIdAsync(countryId) ?? new CountryDataById();
-		IsVisible = true;
-	}
-	public void NavigateToList()
-	{
-		var navUrl = $"/countries";
-		NavigationManager.NavigateTo(navUrl);
-
-	}
-	public void NavigateToMain()
-	{
-		var navUrl = $"/";
-		NavigationManager.NavigateTo(navUrl);
-
-	}
 }

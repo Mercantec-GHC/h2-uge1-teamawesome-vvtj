@@ -1,5 +1,4 @@
 ﻿@page "/countries"
-@inject BlazorWASM.Services.APIService APIService
 
 @if (countries == null)
 {
@@ -48,33 +47,7 @@ else
 		</GridColumns>
 	</Grid>
 }
-@code {
-	[Inject]
-	NavigationManager NavigationManager { get; set; } = default!;
-	[Parameter]
-	public string? countryId { get; set; }
-	public List<Country>? countries;
 
-	protected override async Task OnInitializedAsync()
-	{
-		countries = await APIService.GetAllCountriesAsync() ?? new List<Country>();
-	}
-
-	private async Task<GridDataProviderResult<Country>> CountriesDataProvider(GridDataProviderRequest<Country> request)
-	{
-		return await Task.FromResult(request.ApplyTo(countries ?? Enumerable.Empty<Country>()));
-	}
-
-	public void ToggleViewButton(Country context)
-	{
-		if (context != null)
-		{
-			var country = (context as Country);
-			var navUrl = $"/countries/{country.Id}";
-			NavigationManager.NavigateTo(navUrl);
-		}
-	}
-}
 
 <style>
 	.border-bottom {
