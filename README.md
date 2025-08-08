@@ -26,3 +26,25 @@ Page Flow
 
 
 **Tetiana:**
+#Overview#
+A Blazor WebAssembly application that fetches country data from a REST API and provides an interactive UI for searching, filtering, and sorting.
+
+#Features#
+
+´- Live Search: Find countries by name with partial or case-insensitive matches.
+
+- Continent & Subregion Filters: Filter the list by continent; once a continent is selected, a secondary filter for subregions appears.
+
+- Population Sorting: Sort the displayed countries by population in ascending or descending order.
+
+- Flag Display: Each country is shown with its national flag for quick visual recognition.
+
+#Technologies#
+
+- Blazor WebAssembly
+
+- .NET 9
+
+- HttpClient for asynchronous API calls
+
+- System.Text.Json for JSON serialization/deserialization
