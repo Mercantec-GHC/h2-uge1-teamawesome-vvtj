@@ -5,7 +5,9 @@
     <div class="container-fluid overflow-x-auto">
         <LineChart @ref="lineChart" Width="800" />
     </div>
-
+    <Button Color="ButtonColor.Primary" @onclick="LoadData">
+        Refresh
+    </Button>
     <Grid TItem="FuelViewModel"
           Class="table table-hover table-bordered table-striped"
           DataProvider="DataProvider"
@@ -28,17 +30,12 @@
                 @context.Variance
             </GridColumn>
         </GridColumns>
-
-        <Button Color="ButtonColor.Primary" @onclick="LoadData">
-            Refresh
-        </Button>
     </Grid>
 }
 
 else
 {
-    <div class="warning-box">
+    <div class="alert alert-danger">
         @_Warning
     </div>
-
 }

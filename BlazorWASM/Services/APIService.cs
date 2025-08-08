@@ -34,7 +34,7 @@ namespace BlazorWASM.Services
             }
         }
 
-        public async Task<IEnumerable<Fuel>?> GetBenzinAsync()
+        public async Task<List<Fuel>?> GetBenzinAsync()
         {
             try
             {
@@ -50,7 +50,7 @@ namespace BlazorWASM.Services
             }
         }
 
-        public async Task<IEnumerable<Fuel>?> GetDiezelAsync()
+        public async Task<List<Fuel>?> GetDiezelAsync()
         {
             try
             {

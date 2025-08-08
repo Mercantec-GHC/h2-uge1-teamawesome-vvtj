@@ -15,16 +15,14 @@ namespace BlazorWASM.Pages
         private IEnumerable<FuelViewModel> data = default!;
         private List<Fuel>? benzinData;
         private List<Fuel>? diezelData;
+        private List<string> labels = new();
         private string _Warning = "Server not working, we try to find a solution, thanks for yours waiting";
         private bool isSuccess = true;
 
         private async Task GetData()
         {
-            var benzinResult = await _apiService.GetBenzinAsync();
-            var diezelResult = await _apiService.GetDiezelAsync();
-
-            benzinData = benzinResult?.ToList();
-            diezelData = diezelResult?.ToList();
+            benzinData = await _apiService.GetBenzinAsync();
+            diezelData = await _apiService.GetDiezelAsync();
 
             if (benzinData == null || diezelData == null)
             {
@@ -42,7 +40,7 @@ namespace BlazorWASM.Pages
             if (isSuccess)
             {
 
-                data = await GetFuelDataAsync();
+                data = await GetViewModel();
                 await BuildChartAsync();
             }
             StateHasChanged();
@@ -62,13 +60,20 @@ namespace BlazorWASM.Pages
         {
             var colors = ColorUtility.CategoricalTwelveColors;
 
-            var benzinLabels = benzinData.Select(x => x.Date).ToList();
+            // Combine dates from both datasets
+            labels.AddRange(benzinData.Select(x => x.Date));
+            labels.AddRange(diezelData.Select(x => x.Date));
+
+            // Remove duplicates and sort the labels
+            labels = labels.Distinct().OrderBy(x => x).ToList();
+
+            // Create a mapping of price for both datasets
             var benzinValues = benzinData.Select(x => (double?)x.Price).ToList();
             var diezelValues = diezelData.Select(x => (double?)x.Price).ToList();
 
             chartData = new ChartData
             {
-                Labels = benzinLabels,
+                Labels = labels,
                 Datasets = new List<IChartDataset>
                 {
                     new LineChartDataset
@@ -111,17 +116,12 @@ namespace BlazorWASM.Pages
         {
             await GetData();
             if (data is null) // pull data only once for client-side filtering, sorting, and paging
-                data = await GetFuelDataAsync(); // async API call
+                data = await GetViewModel(); // async API call
 
             return request.ApplyTo(data);
         }
 
-        public async Task<IEnumerable<FuelViewModel>> GetFuelDataAsync()
-        {
-            return await GetFuelPrice();
-        }
-
-        private async Task<IEnumerable<FuelViewModel>> GetFuelPrice()
+        private async Task<IEnumerable<FuelViewModel>> GetViewModel()
         {
             FuelViewModel benzinView = new FuelViewModel()
             {
@@ -176,7 +176,7 @@ namespace BlazorWASM.Pages
         public class FuelViewModel
         {
             public string? FuelType { get; set; }
-            public double LastPrice { get; set; }
+            public double? LastPrice { get; set; }
             public double AvaragePrice { get; set; }
             public double Mediana { get; set; }
             public double Variance { get; set; }
