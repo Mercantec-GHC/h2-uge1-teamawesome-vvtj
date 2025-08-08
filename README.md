@@ -1,2 +1,3 @@
 # H2-U1
-Pensum og opgave til uge 1 på H2 med MAGS
+Pensum og opgave til uge 1 på H2 med MAGS  
+ Vlad: I developed a Blazor WebAssembly component that retrieves gasoline and diesel price data through two API requests, deserializes it into a Fuel model, and processes it on a Razor page. The data is mapped into a FuelViewModel, where I calculated statistical metrics such as the last price, average, median, and variance for each fuel type. I then configured a BlazorBootstrap LineChart to visualize the data, combining and deduplicating date labels for the x-axis and mapping price values for the y-axis, applying distinct colors for benzin and diesel. Additionally, I created a table displaying both fuel types with their calculated statistics, and implemented error handling to show a warning message if data retrieval fails, ensuring that data is loaded and rendered only once for better performance.
