@@ -4,7 +4,7 @@
 
 @if (!IsVisible)
 {
-	<p>No data available</p>
+	<p>Data is loading...</p>
 }
 
 else
@@ -13,9 +13,9 @@ else
 		<div class="d-flex justify-content-center">
 			<Card Style="width:35rem;" Class="m-2 bg-body-tertiary container ">
 				<CardBody Class="mx-0 px-0">
-					<CardTitle Class="m-0">
-						<div class="bg-warning py-2 w-100">
-							<div class="text-center text-white fw-bold">@countryDashboard?.Name?.Official</div>
+					<CardTitle Class="m-0 p-0">
+						<div class="bg-warning w-100">
+							<div class="text-center text-white fw-bold fs-1 py-3">@countryDashboard?.Name?.Official</div>
 						</div>
 					</CardTitle>
 				</CardBody>
@@ -45,6 +45,12 @@ else
 						}
 					</li>
 					<li class="list-group-item">
+						<div><span class="text-success-emphasis fw-bolder">Population: </span>@string.Format("{0:N0}", countryDashboard?.Population) people</div>
+					</li>
+					<li class="list-group-item">
+						<div><span class="text-success-emphasis fw-bolder">Area: </span>@string.Format("{0:N0}", countryDashboard?.Area) km<sup>2</sup></div>
+					</li>
+					<li class="list-group-item">
 						@if (countryDashboard?.Currencies != null && countryDashboard.Currencies.Any())
 						{
 							<div>
@@ -61,8 +67,8 @@ else
 					</li>
 				</ul>
 				<CardBody Class="d-flex flex-row justify-content-evenly bg-body-tertiary">
-					<Button Class="btn-success" @onclick="() => NavigateToList()">Back to the list</Button>
 					<Button Class="btn-outline-primary" @onclick="() => NavigateToMain()">Back to main page</Button>
+					<Button Class="btn-success" @onclick="() => NavigateToList()">Back to the list</Button>
 				</CardBody>
 			</Card>
 		</div>
@@ -100,12 +106,8 @@ else
 
 	protected override async Task OnInitializedAsync()
 	{
-		//if (Guid.TryParse(countryId, out Guid countryGuid))
-		//{
 		countryDashboard = await APIService.GetCountryDataByIdAsync(countryId) ?? new CountryDataById();
 		IsVisible = true;
-		//}
-		await base.OnInitializedAsync();
 	}
 	public void NavigateToList()
 	{

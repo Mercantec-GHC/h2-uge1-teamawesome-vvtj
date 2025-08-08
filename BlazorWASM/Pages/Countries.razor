@@ -7,7 +7,9 @@
 }
 else
 {
-	<h3>Countries</h3>
+	<div class="container-fluid border-bottom mb-3">
+		<h2 class="text-center py-3 text-white fw-bold">Countries of the World</h2>
+	</div>
 
 	<Grid TItem="Country"
 		  AllowPaging="true"
@@ -16,25 +18,32 @@ else
 		  DataProvider="CountriesDataProvider"
 		  Class="table table-hover table-bordered table-striped"
 		  PageSize="15"
+		  RowKeySelector="(ctr) => ctr.Id"
 		  Responsive="true">
 
 		<GridColumns>
 			<GridColumn TItem="Country" HeaderText="Id" PropertyName="Id" SortKeySelector="item => item.Id" IsVisible="false">
 				@context.Id
 			</GridColumn>
-            <GridColumn TItem="Country">
-            <Button Class="btn-primary justify-content-center" @onclick="() => ToggleCountryDashboard(context)">
-            View more
-            </Button>
-            </GridColumn>
-			<GridColumn TItem="Country" HeaderText="Name (Official)" PropertyName="Name.Official" SortKeySelector="item => item.Name.Official">
+			<GridColumn TItem="Country" HeaderText="Name" HeaderTextAlignment="Alignment.Center" PropertyName="OfficialName" Filterable="true" SortKeySelector="item => item.OfficialName">
 				@context.Name?.Official
 			</GridColumn>
-			<GridColumn TItem="Country" HeaderText="Region" PropertyName="Region" SortKeySelector="item => item.Region">
+			<GridColumn TItem="Country" HeaderText="Region" HeaderTextAlignment="Alignment.Center" PropertyName="Region" SortKeySelector="item => item.Region">
 				@context.Region
 			</GridColumn>
-			<GridColumn TItem="Country" HeaderText="Continent" PropertyName="Continent" SortKeySelector="item => item.Continent">
-				@context.Continent
+			<GridColumn TItem="Country" HeaderText="Subregion" HeaderTextAlignment="Alignment.Center" PropertyName="Subregion" SortKeySelector="item => item.Subregion">
+				@context.Subregion
+			</GridColumn>
+			<GridColumn TItem="Country" HeaderText="Continent" HeaderTextAlignment="Alignment.Center" PropertyName="Continent" Filterable="false" SortKeySelector="item =>  item.Continents[0]">
+				@if (@context.Continents != null)
+				{
+					@context.Continents[0]
+				}
+			</GridColumn>
+			<GridColumn TItem="Country" TextAlignment="Alignment.Center" FilterTextboxWidth="100" Filterable="false">
+				<Button Class="btn-primary px-5" @onclick="() => ToggleViewButton(context)">
+					View
+				</Button>
 			</GridColumn>
 		</GridColumns>
 	</Grid>
@@ -53,10 +62,10 @@ else
 
 	private async Task<GridDataProviderResult<Country>> CountriesDataProvider(GridDataProviderRequest<Country> request)
 	{
-		return await Task.FromResult(request.ApplyTo(countries));
+		return await Task.FromResult(request.ApplyTo(countries ?? Enumerable.Empty<Country>()));
 	}
 
-	public void ToggleCountryDashboard(Country context)
+	public void ToggleViewButton(Country context)
 	{
 		if (context != null)
 		{
@@ -66,3 +75,10 @@ else
 		}
 	}
 }
+
+<style>
+	.border-bottom {
+		box-shadow: 1px 2px 5px 0px #c1ceec;
+		background: radial-gradient(circle at bottom, #2c0e4f 0%, #3a0647 20%, #0d2262 40%, #87ceeb 60%, #4682b4 80%, #05163c 100%);
+	}
+</style>
